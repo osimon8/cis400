@@ -5,8 +5,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // console.log(database);
-  res.send("HELLO");
+  res.send("HELLO WORLDS...");
 });
 
 module.exports = router;
