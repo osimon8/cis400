@@ -2,14 +2,27 @@
   "name": "backend",
   "version": "0.0.0",
   "private": true,
+  "type": "commonjs",
   "scripts": {
-    "start": "node ./bin/www"
+    "build": "babel src -d build/",
+    "watch": "babel -w src/ -d build/",
+    "start": "babel-node ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf build"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "firebase": "^9.4.1",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "babel-cli": "^6.26.0",
+    "nodemon": "^2.0.15"
   }
 }
