@@ -11,7 +11,7 @@ const { v4: uuid } = require("uuid");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
-  database.query("SELECT email from USERS;", function (error, results) {
+  database.query("SELECT id, email from USERS;", function (error, results) {
     if (error) {
       res.sendStatus(500);
     } else {
@@ -67,6 +67,56 @@ router.post("/create", async function (req, res, next) {
         }
       } else {
         res.sendStatus(201);
+      }
+    }
+  );
+});
+
+router.post("/addFriend", async function (req, res, next) {
+  const { user1, user2 } = req.body;
+  if (!user1 || !user2) {
+    res.statusCode = 400;
+    res.send("Need two user ids");
+    return;
+  }
+  database.query(
+    "INSERT INTO FRIENDS (userId, friendId) VALUES(?,?), (?,?);",
+    [user1, user2, user2, user1],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        if (error.code === "ER_NO_REFERENCED_ROW") {
+          res.status(404);
+          res.send("User with provided ID not found");
+        } else if (error.code === "ER_DUP_ENTRY") {
+          res.status(400);
+          res.send("Users are already friends");
+        } else {
+          res.sendStatus(500);
+        }
+      } else {
+        res.sendStatus(201);
+      }
+    }
+  );
+});
+
+router.get("/getFriends/:userId", async function (req, res, next) {
+  const { userId } = req.params;
+  if (!userId) {
+    res.statusCode = 400;
+    res.send("Need userId");
+    return;
+  }
+  database.query(
+    "SELECT friendId FROM FRIENDS WHERE userId=?;",
+    [userId],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        res.send(results);
       }
     }
   );
