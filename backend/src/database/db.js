@@ -1,16 +1,15 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection } from 'firebase/firestore/lite';
-const firebaseConfig = require('../secrets/firebaseConfig');
+var mysql = require("mysql");
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+const creds = require("../../secrets/rds");
+var database = mysql.createConnection(creds);
 
-// Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
-const database = getFirestore(firebaseApp);
+database.connect(function (err) {
+  if (err) {
+    console.error("Database connection failed: " + err.stack);
+    return;
+  }
 
-export {
-    firebaseApp,
-    database
-}
+  console.log("Connected to database.");
+});
+
+export { database };
