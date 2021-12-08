@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { Text, View, StyleSheet , Button, TextInput} from 'react-native';
+import { View, StyleSheet , Button, TextInput} from 'react-native';
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({navigation}: {navigation: any}) {
   const [firstName, setFirstName] = React.useState("");
   const [secondName, setSecondName] = React.useState("");
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const handleSignup = () => {
+    navigation.navigate('Login', { name: 'Daniel'})
     //hashing the password
     console.log("hellow this is it");
   }

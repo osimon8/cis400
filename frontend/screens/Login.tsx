@@ -6,7 +6,9 @@ export default function LoginScreen({navigation}: {navigation: any}) {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const handleLogin =()=>{
-    navigation.navigate('Home', { name: 'Jane' })
+    if (username && password) {
+      navigation.navigate('Map', { name: 'Daniel' })
+    }
   }
   const handleRegistration = ()=>{
     navigation.navigate('Registration', { name: 'Arnaud'})
@@ -16,17 +18,11 @@ export default function LoginScreen({navigation}: {navigation: any}) {
       <TextInput  
         placeholder="Username"
         style={styles.input}
-        onChangeText={val=> {
-          setUsername(val);
-          console.log(username)
-      }}/> 
+        onChangeText={setUsername}/> 
       <TextInput 
         placeholder="Password"
         style={styles.input}
-        onChangeText={val=> {
-            setPassword(val);
-            console.log(password)
-        }}/> 
+        onChangeText={setPassword}/> 
       <Text style={styles.text}>
         Don't have an account? <Text style={styles.hyperlink} onPress={handleRegistration}>Sign up here.</Text>
       </Text>
