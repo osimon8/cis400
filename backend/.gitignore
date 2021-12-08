@@ -106,5 +106,6 @@ dist
 secrets/
 
 build/
+dist/
  
  
