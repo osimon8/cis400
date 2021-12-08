@@ -72,6 +72,37 @@ router.post("/create", async function (req, res, next) {
   );
 });
 
+router.post("/login", async function (req, res, next) {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    res.statusCode = 400;
+    res.send("Missing email or password");
+    return;
+  }
+  database.query(
+    "SELECT id,password FROM USERS WHERE email=?;",
+    [email],
+    async function (error, results) {
+      if (error) {
+        res.sendStatus(500);
+      } else {
+        if (results.length == 0) {
+          res.status(404);
+          res.send("User not found");
+        } else {
+          const user = results[0];
+          const valid = await bcrypt.compare(password, user.password);
+          if (valid) {
+            res.send(user.id);
+          } else {
+            res.status(401).send("Invalid password");
+          }
+        }
+      }
+    }
+  );
+});
+
 router.post("/addFriend", async function (req, res, next) {
   const { user1, user2 } = req.body;
   if (!user1 || !user2) {
