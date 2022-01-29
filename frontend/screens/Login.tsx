@@ -1,34 +1,47 @@
-import * as React from 'react';
+import * as React from "react";
 
-import { Text, View, StyleSheet , TextInput, Button, SafeAreaView} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  Button,
+  SafeAreaView,
+} from "react-native";
 
-export default function LoginScreen({navigation}: {navigation: any}) {
+export default function LoginScreen({ navigation }: { navigation: any }) {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const handleLogin =()=>{
+  const handleLogin = () => {
     if (username && password) {
-      navigation.navigate('Map', { name: 'Daniel' })
+      navigation.navigate("Map", { name: "Daniel" });
     }
-  }
-  const handleRegistration = ()=>{
-    navigation.navigate('Registration', { name: 'Arnaud'})
-  }
+  };
+  const handleRegistration = () => {
+    navigation.navigate("Registration", { name: "Arnaud" });
+  };
   return (
     <View style={styles.container}>
-      <TextInput  
+      <TextInput
         placeholder="Username"
         style={styles.input}
-        onChangeText={setUsername}/> 
-      <TextInput 
+        onChangeText={setUsername}
+      />
+      <TextInput
         placeholder="Password"
         style={styles.input}
-        onChangeText={setPassword}/> 
+        onChangeText={setPassword}
+      />
       <Text style={styles.text}>
-        Don't have an account? <Text style={styles.hyperlink} onPress={handleRegistration}>Sign up here.</Text>
+        Don't have an account?{" "}
+        <Text style={styles.hyperlink} onPress={handleRegistration}>
+          Sign up here.
+        </Text>
       </Text>
-      <Button 
-        title="Login"
-        onPress= {handleLogin}> hello</Button>
+      <Button title="Login" onPress={handleLogin}>
+        {" "}
+        hello
+      </Button>
     </View>
   );
 }
@@ -36,24 +49,24 @@ export default function LoginScreen({navigation}: {navigation: any}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   input: {
-    width: '90%',
+    width: "90%",
     marginVertical: 5,
     borderWidth: 0,
     borderBottomWidth: 1,
-    padding: 10, 
+    padding: 10,
   },
- 
-  text:{
+
+  text: {
     fontWeight: "bold",
-    paddingBottom: 5
+    paddingBottom: 5,
   },
-  
-  hyperlink:{
+
+  hyperlink: {
     color: "blue",
-    textDecorationLine: "underline"
-  }
+    textDecorationLine: "underline",
+  },
 });
