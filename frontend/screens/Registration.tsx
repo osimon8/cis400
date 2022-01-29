@@ -54,9 +54,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    marginVertical: 5,
     width: '90%',
-    borderWidth: 1,
-    padding: 10,
+    marginVertical: 5,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    padding: 10, 
   },
+ 
 });
