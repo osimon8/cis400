@@ -13,9 +13,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const handleLogin = () => {
-    if (username && password) {
-      navigation.navigate("Map", { name: "Daniel" });
-    }
+    navigation.navigate("Tab", { name: "Daniel" });
   };
   const handleRegistration = () => {
     navigation.navigate("Registration", { name: "Arnaud" });
@@ -38,10 +36,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
           Sign up here.
         </Text>
       </Text>
-      <Button title="Login" onPress={handleLogin}>
-        {" "}
-        hello
-      </Button>
+      <Button title="Login" onPress={handleLogin}></Button>
     </View>
   );
 }
