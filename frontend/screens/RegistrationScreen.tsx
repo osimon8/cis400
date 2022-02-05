@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, StyleSheet, Button, TextInput } from "react-native";
+import { register } from "../action";
 
 export default function RegistrationScreen({
   navigation,
@@ -8,12 +9,13 @@ export default function RegistrationScreen({
 }) {
   const [firstName, setFirstName] = React.useState("");
   const [secondName, setSecondName] = React.useState("");
-  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
   const handleSignup = () => {
+    register(email, password, firstName, secondName);
     navigation.navigate("Login", { name: "Daniel" });
     //hashing the password
-    console.log("hellow this is it");
   };
   return (
     <View style={styles.container}>
@@ -22,7 +24,6 @@ export default function RegistrationScreen({
         style={styles.input}
         onChangeText={(val) => {
           setFirstName(val);
-          console.log(firstName);
         }}
       />
       <TextInput
@@ -30,15 +31,13 @@ export default function RegistrationScreen({
         style={styles.input}
         onChangeText={(val) => {
           setSecondName(val);
-          console.log(secondName);
         }}
       />
       <TextInput
-        placeholder="Username"
+        placeholder="Email"
         style={styles.input}
         onChangeText={(val) => {
-          setUsername(val);
-          console.log(username);
+          setEmail(val);
         }}
       />
       <TextInput
@@ -46,7 +45,13 @@ export default function RegistrationScreen({
         style={styles.input}
         onChangeText={(val) => {
           setPassword(val);
-          console.log(password);
+        }}
+      />
+      <TextInput
+        placeholder="Confirm Password"
+        style={styles.input}
+        onChangeText={(val) => {
+          setPasswordConfirmation(val);
         }}
       />
       <Button title="Sign up" onPress={handleSignup} />

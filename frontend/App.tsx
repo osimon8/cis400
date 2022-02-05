@@ -8,34 +8,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TabScreen from "./screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-
 const Tab = createBottomTabNavigator();
-function Screen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
 
-function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}
-function Test() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Feed" component={Screen} />
-      <Tab.Screen name="Messages" component={SettingsScreen} />
-    </Tab.Navigator>
-  );
-}
 export default function App() {
   const Stack = createStackNavigator();
-  const isLoggedIn = true;
+  const isLoggedIn = false;
 
   return (
     <NavigationContainer>
