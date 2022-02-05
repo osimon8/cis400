@@ -1,7 +1,10 @@
 var express = require("express");
+const secret = require("../../secrets/jwt");
 var router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const saltRounds = 10;
+const { authenticate } = require("./utils");
 
 const { database } = require("../database/db");
 
@@ -92,7 +95,10 @@ router.post("/login", async function (req, res, next) {
           const user = results[0];
           const valid = await bcrypt.compare(password, user.password);
           if (valid) {
-            res.send(user.id);
+            const token = jwt.sign({ userId: user.id }, secret, {
+              expiresIn: "365d",
+            });
+            res.send(token);
           } else {
             res.status(401).send("Invalid password");
           }
@@ -102,16 +108,17 @@ router.post("/login", async function (req, res, next) {
   );
 });
 
-router.post("/addFriend", async function (req, res, next) {
-  const { user1, user2 } = req.body;
-  if (!user1 || !user2) {
+router.post("/addFriend", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  const { friendId } = req.body;
+  if (!friendId) {
     res.statusCode = 400;
-    res.send("Need two user ids");
+    res.send("Missing friendId");
     return;
   }
   database.query(
     "INSERT INTO FRIENDS (userId, friendId) VALUES(?,?), (?,?);",
-    [user1, user2, user2, user1],
+    [userId, friendId, friendId, userId],
     function (error, results) {
       if (error) {
         console.log(error);
@@ -131,13 +138,9 @@ router.post("/addFriend", async function (req, res, next) {
   );
 });
 
-router.get("/getFriends/:userId", async function (req, res, next) {
-  const { userId } = req.params;
-  if (!userId) {
-    res.statusCode = 400;
-    res.send("Need userId");
-    return;
-  }
+router.get("/getFriends", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  console.log(userId);
   database.query(
     "SELECT friendId FROM FRIENDS WHERE userId=?;",
     [userId],
