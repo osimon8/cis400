@@ -1,5 +1,5 @@
 // import * as React from 'react';
-import MapView, { Marker, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, Circle } from "react-native-maps";
 import React, { useState, useEffect } from "react";
 import {
   Platform,
@@ -17,6 +17,7 @@ import {
   TextInput,
 } from "react-native";
 import * as Location from "expo-location";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
 export default function App() {
   const [location, setLocation] = useState(null);
@@ -64,12 +65,13 @@ export default function App() {
           initialRegion={{
             latitude: latitude,
             longitude: longitude,
-            latitudeDelta: 0.233,
-            longitudeDelta: 0.8838,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
           }}
           onPress={() => handleOpen}
+          // provider={"google"}
         >
-          <Marker coordinate={coordinates} />
+          <Marker coordinate={coordinates} pinColor="#157106" />
 
           <Marker coordinate={coordinatesF} onPress={handleOpen}>
             <Callout tooltip>
@@ -80,6 +82,22 @@ export default function App() {
               </TouchableHighlight>
             </Callout>
           </Marker>
+          <Circle
+            onPress={() => console.log("pressed")}
+            center={coordinates}
+            radius={2000}
+            strokeWidth={1}
+            strokeColor={"#C86F6F"}
+            fillColor={"rgba(230,238,255,0.5)"}
+          />
+          <Circle
+            onPress={() => console.log("pressed")}
+            center={coordinates}
+            radius={1000}
+            strokeWidth={1}
+            strokeColor={"#1a66ff"}
+            fillColor={"rgba(230,238,255,0.5)"}
+          />
         </MapView>
       </View>
 

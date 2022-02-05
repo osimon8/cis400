@@ -8,6 +8,9 @@ import App from "./MapScreen";
 import FriendScreen from "./FriendsScreen";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import MessagesScreen from "./MessagesScreen";
+
 const Tab = createBottomTabNavigator();
 
 export default function TabScreen() {
@@ -27,6 +30,13 @@ export default function TabScreen() {
           tabBarIcon: () => (
             <FontAwesome5 name="user-friends" size={24} color="black" />
           ),
+        }}
+      />
+      <Tab.Screen
+        name="Messages"
+        component={MessagesScreen}
+        options={{
+          tabBarIcon: () => <Entypo name="message" size={24} color="black" />,
         }}
       />
     </Tab.Navigator>
