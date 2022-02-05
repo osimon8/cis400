@@ -1,11 +1,13 @@
 var express = require("express");
 var router = express.Router();
 var geolib = require("geolib");
+const { authenticate } = require("./utils");
 
 const { database } = require("../database/db");
 
-router.post("/set", async function (req, res, next) {
-  const { userId, latitude, longitude } = req.body;
+router.post("/set", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  const { latitude, longitude } = req.body;
   if (!userId || !latitude || !longitude) {
     res.statusCode = 400;
     res.send("Missing user ID or coordinates");

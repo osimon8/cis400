@@ -13,13 +13,16 @@ const { v4: uuid } = require("uuid");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
-  database.query("SELECT id, email from USERS;", function (error, results) {
-    if (error) {
-      res.sendStatus(500);
-    } else {
-      res.send(results);
+  database.query(
+    "SELECT id, email, firstName, lastName from USERS;",
+    function (error, results) {
+      if (error) {
+        res.sendStatus(500);
+      } else {
+        res.send(results);
+      }
     }
-  });
+  );
 });
 
 router.get("/get/:email", function (req, res, next) {
@@ -49,7 +52,7 @@ router.get("/get/:email", function (req, res, next) {
 });
 
 router.post("/create", async function (req, res, next) {
-  const { email, password } = req.body;
+  const { email, password, firstName, lastName } = req.body;
   if (!email || !password) {
     res.statusCode = 400;
     res.send("Missing email or password");
@@ -57,8 +60,8 @@ router.post("/create", async function (req, res, next) {
   }
   const hashed = await bcrypt.hash(password, saltRounds);
   database.query(
-    "INSERT INTO USERS (id, email,password) VALUES(?,?,?);",
-    [uuid(), email, hashed],
+    "INSERT INTO USERS (id, email, password, firstName, lastName) VALUES(?,?,?,?,?);",
+    [uuid(), email, hashed, firstName, lastName],
     function (error, results) {
       if (error) {
         if (error.code === "ER_DUP_ENTRY") {
@@ -140,7 +143,6 @@ router.post("/addFriend", authenticate, async function (req, res, next) {
 
 router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
-  console.log(userId);
   database.query(
     "SELECT friendId FROM FRIENDS WHERE userId=?;",
     [userId],
