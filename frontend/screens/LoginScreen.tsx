@@ -1,4 +1,5 @@
 import * as React from "react";
+import AppContext from "../AppContext";
 
 import {
   Text,
@@ -8,12 +9,26 @@ import {
   Button,
   SafeAreaView,
 } from "react-native";
+import { login } from "../action";
 
-export default function LoginScreen({ navigation }: { navigation: any }) {
-  const [username, setUsername] = React.useState("");
+export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const handleLogin = () => {
-    navigation.navigate("Tab", { name: "Daniel" });
+    login(email, password)
+      .then((response) => {
+        navigation.navigate("Home", { name: "Daniel" });
+      })
+      .catch((error) => {
+        switch (error.response.status) {
+          case 401:
+            console.log("Invalid password");
+            break;
+          case 404:
+            console.log("User not found");
+            break;
+        }
+      });
   };
   const handleRegistration = () => {
     navigation.navigate("Registration", { name: "Arnaud" });
@@ -23,7 +38,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
       <TextInput
         placeholder="Username"
         style={styles.input}
-        onChangeText={setUsername}
+        onChangeText={setEmail}
       />
       <TextInput
         placeholder="Password"

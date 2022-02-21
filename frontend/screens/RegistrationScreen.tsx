@@ -13,9 +13,14 @@ export default function RegistrationScreen({
   const [password, setPassword] = React.useState("");
   const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
   const handleSignup = () => {
-    register(email, password, firstName, secondName);
-    navigation.navigate("Login", { name: "Daniel" });
-    //hashing the password
+    register(email, password, firstName, secondName)
+      .then(function (response) {
+        console.log(response.status);
+      })
+      .catch(function (error) {
+        console.log("failed");
+      });
+    navigation.navigate("Login", { name: "Daniel", message: "hehahha" });
   };
   return (
     <View style={styles.container}>
