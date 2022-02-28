@@ -1,37 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Text, View, StyleSheet, FlatList } from "react-native";
+import { searchUser, addFriend, getFriends } from "../action";
 
 import { SearchBar } from "react-native-elements";
+import * as SecureStore from "expo-secure-store";
 
 export default function FriendScreen() {
   const [search, setSearch] = useState("");
-
-  const updateSearch = (input: String) => {
-    setSearch(input);
+  const [searches, setSearches] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const handleAddFriend = (id: string) => {
+    addFriend(id);
   };
-  const hardCoded = [
-    { key: "Devin canada" },
-    { key: "Dan Usa" },
-    { key: "Dominic Djibouti" },
-    { key: "Jackson Rwanda" },
-    { key: "James Tanzania" },
-    { key: "Joel Embid" },
-    { key: "John Mexico" },
-    { key: "Jillian Egypt" },
-    { key: "Jimmy fallon" },
-    { key: "Julie Fox" },
-  ];
-
-  const it = (name: String) => {
+  const updateSearch = (input: string) => {
+    setSearch(input);
+    searchUser(input)
+      .then((response) => {
+        console.log("data", response.data);
+        setSearches(response.data);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+  useEffect(() => {
+    SecureStore.getItemAsync("authToken").then((res) => {
+      getFriends(res).then((response) => {
+        setFriends(response.data);
+      });
+    });
+  }, []);
+  const it = (data: Object) => {
     return (
       <View style={styles.container}>
         <View style={styles.flexContainer}>
           <View>
-            <Text style={styles.mainText}>{name}</Text>
-            <Text>Online</Text>
+            <Text
+              style={styles.mainText}
+            >{`${data.firstName} ${data.lastName}`}</Text>
+            <Text>{data.email}</Text>
           </View>
           <View>
-            <Button title="Add" />
+            <Button
+              title="Add"
+              onPress={() => {
+                handleAddFriend(data.id);
+              }}
+            />
           </View>
         </View>
       </View>
@@ -40,7 +55,7 @@ export default function FriendScreen() {
   const FlatListBasics = () => {
     return (
       <View style={styles.listContainer}>
-        <FlatList data={hardCoded} renderItem={({ item }) => it(item.key)} />
+        <FlatList data={friends} renderItem={({ item }) => it(item)} />
       </View>
     );
   };
@@ -49,10 +64,11 @@ export default function FriendScreen() {
     <View>
       <SearchBar
         placeholder="Type Here..."
-        onChangeText={updateSearch}
-        value={search}
+        platform="ios"
         lightTheme
         round
+        onChangeText={updateSearch}
+        value={search}
       />
       <View style={styles.listContainer}>{FlatListBasics()}</View>
     </View>

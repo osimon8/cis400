@@ -11,27 +11,14 @@ import {
 } from "react-native";
 import { login } from "../action";
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, handleLoginCallBack }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const handleLogin = () => {
-    login(email, password)
-      .then((response) => {
-        navigation.navigate("Home", { name: "Daniel" });
-      })
-      .catch((error) => {
-        switch (error.response.status) {
-          case 401:
-            console.log("Invalid password");
-            break;
-          case 404:
-            console.log("User not found");
-            break;
-        }
-      });
+    handleLoginCallBack(email, password);
   };
   const handleRegistration = () => {
-    navigation.navigate("Registration", { name: "Arnaud" });
+    navigation.navigate("Registration");
   };
   return (
     <View style={styles.container}>

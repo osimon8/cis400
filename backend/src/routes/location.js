@@ -53,4 +53,15 @@ router.get("/get", async function (req, res, next) {
   });
 });
 
+router.get("/distance", async function (req, res, next) {
+  database.query("SELECT * FROM LOCATION", function (error, results) {
+    if (error) {
+      console.log(error);
+      res.sendStatus(500);
+    } else {
+      res.send(results);
+    }
+  });
+});
+
 module.exports = router;

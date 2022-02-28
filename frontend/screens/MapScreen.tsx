@@ -18,6 +18,8 @@ import {
 } from "react-native";
 import * as Location from "expo-location";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import * as SecureStore from "expo-secure-store";
+import { setUserLocation } from "../action";
 
 export default function App() {
   const [location, setLocation] = useState(null);
@@ -38,16 +40,30 @@ export default function App() {
   };
   useEffect(() => {
     (async () => {
+      console.log("hshhshhshshsh");
       let { status } = await Location.requestForegroundPermissionsAsync();
+      console.log("hahah", status);
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location);
-      var coords = location["coords"];
-      setLatitude(coords["latitude"]);
-      setLongitude(coords["longitude"]);
+      //retrieving the user token
+      SecureStore.getItemAsync("authToken").then((auth) => {
+        //Getting the user location
+        Location.getCurrentPositionAsync({}).then((resp) => {
+          var coords = resp["coords"];
+          setLatitude(coords["latitude"]);
+          setLongitude(coords["longitude"]);
+          //setting the user location in the backend
+          setUserLocation(auth, coords["longitude"], coords["latitude"])
+            .then((results) => {
+              console.log("location saved", results.status);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+      });
     })();
   }, []);
 

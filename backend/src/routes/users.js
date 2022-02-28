@@ -1,5 +1,5 @@
 var express = require("express");
-const secret = require("../../secrets/jwt");
+const secret = require("../../secrets/rds");
 var router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -9,10 +9,11 @@ const { authenticate } = require("./utils");
 const { database } = require("../database/db");
 
 // import { v4 as uuid } from "uuid";
-const { v4: uuid } = require("uuid");
+const { v4: uuid, validate } = require("uuid");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
+  console.log("testing", req.get("authorization"));
   database.query(
     "SELECT id, email, firstName, lastName from USERS;",
     function (error, results) {
@@ -97,8 +98,12 @@ router.post("/login", async function (req, res, next) {
         } else {
           const user = results[0];
           const valid = await bcrypt.compare(password, user.password);
+          console.log("valid", valid);
           if (valid) {
-            const token = jwt.sign({ userId: user.id }, secret, {
+            /*
+             * replaced secret with '12345'
+             */
+            const token = jwt.sign({ userId: user.id }, "12345", {
               expiresIn: "365d",
             });
             res.send(token);
@@ -113,6 +118,7 @@ router.post("/login", async function (req, res, next) {
 
 router.post("/addFriend", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
+  console.log("userId", userId);
   const { friendId } = req.body;
   if (!friendId) {
     res.statusCode = 400;
@@ -143,9 +149,26 @@ router.post("/addFriend", authenticate, async function (req, res, next) {
 
 router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
+  //changed the querry to retrieve the firstname, lastname, and email
   database.query(
-    "SELECT friendId FROM FRIENDS WHERE userId=?;",
+    "SELECT * from (SELECT friendId FROM FRIENDS WHERE userId=?) a Join USERS ON a.friendId = USERS.id;",
     [userId],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        res.send(results);
+      }
+    }
+  );
+});
+
+router.get("/search", async function (req, res, next) {
+  const { input } = req.query;
+  console.log("input", input);
+  database.query(
+    `SELECT id, firstName, lastName, email FROM USERS WHERE email LIKE '%${input}%';`,
     function (error, results) {
       if (error) {
         console.log(error);

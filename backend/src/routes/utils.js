@@ -1,15 +1,19 @@
 const jwt = require("jsonwebtoken");
-const secret = require("../../secrets/jwt");
+const secret = require("../../secrets/rds");
 const { database } = require("../database/db");
 const { v4: uuid } = require("uuid");
 
 const authenticate = (req, res, next) => {
-  const token = req.get("authorization");
+  const token = req.get("Auth");
+  console.log("Authorization", req.get("Auth"));
   if (!token) {
     res.sendStatus(401);
     return;
   }
-  jwt.verify(token, secret, (err, decoded) => {
+  /*
+   * replaced secret with '12345'
+   */
+  jwt.verify(token, "12345", (err, decoded) => {
     if (err) {
       res.sendStatus(400);
       return;
