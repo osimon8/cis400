@@ -61,6 +61,16 @@ export default function App({ navigation }) {
         }
       });
   };
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    SecureStore.deleteItemAsync("authToken")
+      .then((res) => {
+        console.log("successfull", res);
+      })
+      .catch((error) => {
+        console.log("failed", error);
+      });
+  };
   const handleRegistration = () => {
     navigation.navigate("Registration", { name: "Arnaud" });
   };
@@ -77,11 +87,11 @@ export default function App({ navigation }) {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isLoggedIn ? (
           <>
-            <Stack.Screen
-              name="Home"
-              component={TabScreen}
-              options={{ title: "" }}
-            />
+            <Stack.Screen name="Home" options={{ title: "" }}>
+              {(props) => (
+                <TabScreen {...props} handleLogoutCallBack={handleLogout} />
+              )}
+            </Stack.Screen>
           </>
         ) : (
           <>

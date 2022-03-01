@@ -21,7 +21,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as SecureStore from "expo-secure-store";
 import { setUserLocation } from "../action";
 
-export default function App() {
+export default function App({ handleLogoutCallback }) {
   const [location, setLocation] = useState(null);
   const [latitude, setLatitude] = useState(1.9441);
   const [longitude, setLongitude] = useState(30.0619);
@@ -75,6 +75,19 @@ export default function App() {
   }
   return (
     <View style={styles.container}>
+      <View
+        style={{ backgroundColor: "white", height: 40, flexDirection: "row" }}
+      >
+        <Button title="Logout" onPress={() => handleLogoutCallback()} />
+        <Switch
+          style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
+          trackColor={{ false: "#ffffff", true: "#ffffff" }}
+          thumbColor={isEnabled ? "#157106" : "#FF0000"}
+          ios_backgroundColor="#fffff"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
+      </View>
       <View>
         <MapView
           style={styles.map}
@@ -200,14 +213,6 @@ export default function App() {
           </View>
         </View>
       </Modal>
-      <Switch
-        style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
-        trackColor={{ false: "#ffffff", true: "#ffffff" }}
-        thumbColor={isEnabled ? "#157106" : "#FF0000"}
-        ios_backgroundColor="#fffff"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
     </View>
   );
 }

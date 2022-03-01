@@ -13,16 +13,19 @@ import MessagesScreen from "./MessagesScreen";
 
 const Tab = createBottomTabNavigator();
 
-export default function TabScreen() {
+export default function TabScreen({ handleLogoutCallBack }) {
   return (
     <Tab.Navigator>
       <Tab.Screen
         name="Map"
-        component={App}
         options={{
           tabBarIcon: () => <FontAwesome name="map" size={24} color="black" />,
         }}
-      />
+      >
+        {(props) => (
+          <App {...props} handleLogoutCallback={handleLogoutCallBack} />
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Friends"
         component={FriendScreen}
