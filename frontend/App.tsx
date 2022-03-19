@@ -1,12 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  Button,
-  SafeAreaView,
-} from "react-native";
+import { StyleSheet } from "react-native";
 import LoginScreen from "./screens/LoginScreen";
 import RegistrationScreen from "./screens/RegistrationScreen";
 import HomeScreen from "./screens/MapScreen";
@@ -16,6 +9,7 @@ import TabScreen from "./screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AppContext from "./AppContext";
 import { useEffect, useState } from "react";
+import MessageScreen from "./screens/MessageScreen";
 import { login } from "./action";
 import * as SecureStore from "expo-secure-store";
 
@@ -92,6 +86,7 @@ export default function App({ navigation }) {
                 <TabScreen {...props} handleLogoutCallBack={handleLogout} />
               )}
             </Stack.Screen>
+            <Stack.Screen name="message" component={MessageScreen} />
           </>
         ) : (
           <>

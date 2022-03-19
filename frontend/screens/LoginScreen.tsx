@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation, handleLoginCallBack }) {
           Sign up here.
         </Text>
       </Text>
-      <Button title="Login" onPress={handleLogin}></Button>
+      <Button title="Login" onPress={handleLogin} />
     </View>
   );
 }

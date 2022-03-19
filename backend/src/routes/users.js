@@ -18,6 +18,7 @@ router.get("/", function (req, res, next) {
     "SELECT id, email, firstName, lastName from USERS;",
     function (error, results) {
       if (error) {
+        console.error(error);
         res.sendStatus(500);
       } else {
         res.send(results);

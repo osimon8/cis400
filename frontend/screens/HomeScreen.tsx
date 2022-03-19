@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View, StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,10 +10,20 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import MessagesScreen from "./MessagesScreen";
+import * as SecureStore from "expo-secure-store";
+import { getFriends } from "../action";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabScreen({ handleLogoutCallBack }) {
+  const [friends, setFriends] = useState([]);
+  useEffect(() => {
+    SecureStore.getItemAsync("authToken").then((res) => {
+      getFriends(res).then((response) => {
+        setFriends(response.data);
+      });
+    });
+  }, []);
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -28,13 +38,14 @@ export default function TabScreen({ handleLogoutCallBack }) {
       </Tab.Screen>
       <Tab.Screen
         name="Friends"
-        component={FriendScreen}
         options={{
           tabBarIcon: () => (
             <FontAwesome5 name="user-friends" size={24} color="black" />
           ),
         }}
-      />
+      >
+        {(props) => <FriendScreen {...props} friends={friends} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Messages"
         component={MessagesScreen}
