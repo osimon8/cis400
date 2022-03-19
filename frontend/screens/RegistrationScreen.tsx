@@ -8,12 +8,12 @@ export default function RegistrationScreen({
   navigation: any;
 }) {
   const [firstName, setFirstName] = React.useState("");
-  const [secondName, setSecondName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
   const handleSignup = () => {
-    register(email, password, firstName, secondName)
+    register(email, password, firstName, lastName)
       .then(function (response) {
         console.log(response.status);
       })
@@ -35,7 +35,7 @@ export default function RegistrationScreen({
         placeholder="Second name"
         style={styles.input}
         onChangeText={(val) => {
-          setSecondName(val);
+          setLastName(val);
         }}
       />
       <TextInput

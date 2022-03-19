@@ -2,12 +2,10 @@
 import MapView, { Marker, Callout, Circle } from "react-native-maps";
 import React, { useState, useEffect } from "react";
 import {
-  Platform,
   Text,
   View,
   StyleSheet,
   Switch,
-  Pressable,
   Alert,
   Modal,
   TouchableHighlight,
@@ -17,7 +15,6 @@ import {
   TextInput,
 } from "react-native";
 import * as Location from "expo-location";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import * as SecureStore from "expo-secure-store";
 import { setUserLocation } from "../action";
 
