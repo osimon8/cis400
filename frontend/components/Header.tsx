@@ -7,7 +7,7 @@ export default function AppHeader({ ret, header }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Button />
+        <Button onPress={ret} />
         <Text style={styles.title}>{header}</Text>
       </View>
     </SafeAreaView>

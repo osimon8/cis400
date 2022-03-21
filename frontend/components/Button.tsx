@@ -1,16 +1,9 @@
 import React from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 
-export default function Button() {
-  //   const { onPress, title = 'Save' } = props;
-
+export default function Button({ onPress }) {
   return (
-    <Pressable
-      style={styles.button}
-      onPress={() => {
-        console.log("heeheh");
-      }}
-    >
+    <Pressable style={styles.button} onPress={onPress}>
       <Text style={styles.text}>{"test"}</Text>
     </Pressable>
   );
@@ -20,17 +13,15 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: "black",
   },
   text: {
     fontSize: 16,
     lineHeight: 21,
-    fontWeight: "bold",
     letterSpacing: 0.25,
-    color: "white",
+    color: "#005DF4",
   },
 });

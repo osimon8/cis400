@@ -13,6 +13,7 @@ import {
   Image,
   Button,
   TextInput,
+  Pressable,
 } from "react-native";
 import * as Location from "expo-location";
 import * as SecureStore from "expo-secure-store";
@@ -108,14 +109,17 @@ export default function App({ handleLogoutCallback }) {
               </TouchableHighlight>
             </Callout>
           </Marker>
-          <Circle
-            onPress={() => console.log("pressed")}
-            center={coordinates}
-            radius={2000}
-            strokeWidth={1}
-            strokeColor={"#C86F6F"}
-            fillColor={"rgba(230,238,255,0.5)"}
-          />
+          <Pressable onPress={() => console.log("pressed")}>
+            <Circle
+              onPress={() => console.log("pressed")}
+              center={coordinates}
+              radius={2000}
+              strokeWidth={1}
+              strokeColor={"#C86F6F"}
+              fillColor={"rgba(230,238,255,0.5)"}
+            />
+          </Pressable>
+
           <Circle
             onPress={() => console.log("pressed")}
             center={coordinates}
