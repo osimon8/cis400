@@ -109,7 +109,7 @@ export default function App({ handleLogoutCallback }) {
               </TouchableHighlight>
             </Callout>
           </Marker>
-          <Pressable onPress={() => console.log("pressed")}>
+          <Pressable >
             <Circle
               onPress={() => console.log("pressed")}
               center={coordinates}
