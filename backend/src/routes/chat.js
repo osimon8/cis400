@@ -20,8 +20,8 @@ router.post(
       return;
     }
     database.query(
-      "SELECT firstName, lastName FROM USERS JOIN FRIENDS ON id=friendId WHERE userId=? AND friendId=?;",
-      [userId, friendId],
+      "SELECT firstName, lastName FROM USERS JOIN FRIENDS ON id=friendId WHERE userId=? AND friendId=?;INSERT INTO CHATS (userId,friendId,text) VALUES (?,?,?)",
+      [userId, friendId, userId, friendId, msg],
       function (error, results) {
         if (error) {
           console.log(error);
@@ -44,4 +44,32 @@ router.post(
   sendNotification
 );
 
+router.get("/getChat", function (req, res, next) {
+  const { userId, friendId } = req.body;
+  if (!userId || !friendId) {
+    res.status(400);
+    res.send("Invalid email");
+    return;
+  }
+
+  database.query(
+    "SELECT * from CHATS WHERE userId=? AND friendId=?",
+    [userId, friendId],
+    function (error, results) {
+      if (error) {
+        res.sendStatus(500);
+      } else {
+        if (results[0].length == 0) {
+          res.status(404);
+          res.send("User not found");
+        } else {
+          res.send(results);
+        }
+      }
+    }
+  );
+});
+
 module.exports = router;
+
+
