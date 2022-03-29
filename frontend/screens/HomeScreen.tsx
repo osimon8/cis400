@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { Text, View, StatusBar } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import React, { useState, useEffect, useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { SearchBar } from "react-native-elements";
 import App from "./MapScreen";
+import LocationScreen from "./LocationScreen";
 import FriendScreen from "./FriendsScreen";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import MessagesScreen from "./MessagesScreen";
 import * as SecureStore from "expo-secure-store";
-import { getFriends } from "../action";
+import { getFriends } from "../api";
+import { UserContext } from "../Context";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabScreen({ handleLogoutCallBack }) {
+  //retrieve the authToken from the context
+  const authToken = useContext(UserContext);
+  console.log("authToken", authToken);
   const [friends, setFriends] = useState([]);
   useEffect(() => {
-    SecureStore.getItemAsync("authToken").then((res) => {
-      getFriends(res).then((response) => {
+    getFriends(authToken)
+      .then((response) => {
         setFriends(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    });
   }, []);
   return (
     <Tab.Navigator>
@@ -33,7 +36,10 @@ export default function TabScreen({ handleLogoutCallBack }) {
         }}
       >
         {(props) => (
-          <App {...props} handleLogoutCallback={handleLogoutCallBack} />
+          <LocationScreen
+            {...props}
+            handleLogoutCallback={handleLogoutCallBack}
+          />
         )}
       </Tab.Screen>
       <Tab.Screen

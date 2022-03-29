@@ -9,7 +9,7 @@ import {
   Button,
   SafeAreaView,
 } from "react-native";
-import { login } from "../action";
+import { login } from "../api";
 
 export default function LoginScreen({ navigation, handleLoginCallBack }) {
   const [email, setEmail] = React.useState("");

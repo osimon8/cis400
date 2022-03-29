@@ -7,7 +7,7 @@ import {
   FlatList,
   TouchableHighlight,
 } from "react-native";
-import { searchUser, addFriend, getFriends } from "../action";
+import { searchUser, addFriend, getFriends } from "../api";
 import { Feather } from "@expo/vector-icons";
 import { SearchBar } from "react-native-elements";
 import * as SecureStore from "expo-secure-store";

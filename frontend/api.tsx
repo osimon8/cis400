@@ -11,7 +11,7 @@ async function getValueFor(key: string) {
   }
 }
 
-const baseUrl = "http://10.103.115.136:3000/";
+const baseUrl = "http://10.102.174.161:3000/";
 //Login
 export const login = (email: String, password: String) => {
   return axios.post(`${baseUrl}users/login`, {
@@ -77,6 +77,14 @@ export const setUserLocation = (
     url: `${baseUrl}location/set`,
     method: "POST",
     data: { longitude: longitude, latitude: latitude },
+    headers: { Auth: `${token}` },
+  });
+};
+
+export const getNearbyFriends = (token: string) => {
+  return axios({
+    url: `${baseUrl}location/getFriendsNearby/`,
+    method: "GET",
     headers: { Auth: `${token}` },
   });
 };

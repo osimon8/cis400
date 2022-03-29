@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, StyleSheet, Button, TextInput } from "react-native";
-import { register } from "../action";
+import { register } from "../api";
 
 export default function RegistrationScreen({
   navigation,

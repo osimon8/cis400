@@ -1,6 +1,6 @@
 // import * as React from 'react';
-import MapView, { Marker, Callout, Circle } from "react-native-maps";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -8,31 +8,35 @@ import {
   Switch,
   Alert,
   Modal,
-  TouchableHighlight,
   TouchableOpacity,
   Image,
   Button,
   TextInput,
   Pressable,
+  FlatList,
+  SectionList,
 } from "react-native";
 import * as Location from "expo-location";
 import * as SecureStore from "expo-secure-store";
 import { getNearbyFriends, setUserLocation } from "../api";
+import { UserContext } from "../Context";
+import { FriendItemList } from "../components/FriendItemList";
 
-export default function App({ handleLogoutCallback }) {
+export default function LocationScreen({ handleLogoutCallback }) {
+  const authToken = useContext(UserContext);
   const [location, setLocation] = useState(null);
   const [latitude, setLatitude] = useState(1.9441);
   const [friends, setFriends] = useState(null);
+  const [clickedFriend, setClickedFriend] = useState("");
   const [longitude, setLongitude] = useState(30.0619);
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   //retrieves the users location
-  const coordinates = { latitude: latitude, longitude: longitude };
-  const coordinatesF = { latitude: 39.96241611314298, longitude: longitude };
-  const handleOpen = () => {
-    console.log("helloo");
+
+  const handleOpen = (id: string, firstName: string, lastName: string) => {
+    setClickedFriend(`${firstName} ${lastName}`);
     setModalVisible(true);
   };
   useEffect(() => {
@@ -44,28 +48,27 @@ export default function App({ handleLogoutCallback }) {
         return;
       }
       //retrieving the user token
-      SecureStore.getItemAsync("authToken").then((auth) => {
-        getNearbyFriends(auth)
-          .then((resp) => {
-            setFriends(resp.data);
-          })
-          .catch((error) => {
-            console.log("error near friends", error.message);
-          });
-        //Getting the user location
-        Location.getCurrentPositionAsync({}).then((resp) => {
-          var coords = resp["coords"];
-          setLatitude(coords["latitude"]);
-          setLongitude(coords["longitude"]);
-          //setting the user location in the backend
-          setUserLocation(auth, coords["longitude"], coords["latitude"])
-            .then((results) => {
-              console.log("location saved", results.status);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+      getNearbyFriends(authToken)
+        .then((resp) => {
+          setFriends(resp.data);
+          console.log(resp.data);
+        })
+        .catch((error) => {
+          console.log("error near friends", error.message);
         });
+      //Getting the user location
+      Location.getCurrentPositionAsync({}).then((resp) => {
+        var coords = resp["coords"];
+        setLatitude(coords["latitude"]);
+        setLongitude(coords["longitude"]);
+        //setting the user location in the backend
+        setUserLocation(authToken, coords["longitude"], coords["latitude"])
+          .then((results) => {
+            console.log("location saved", results.status);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
     })();
   }, []);
@@ -74,8 +77,19 @@ export default function App({ handleLogoutCallback }) {
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
-    console.log("hehehe");
   }
+  const FlatListBasics = (distance) => {
+    return (
+      <View>
+        <FlatList
+          data={friends ? friends[`${distance}`] : []}
+          renderItem={({ item }) => (
+            <FriendItemList data={item} handleOpen={handleOpen} />
+          )}
+        />
+      </View>
+    );
+  };
   return (
     <View style={styles.container}>
       <View
@@ -91,58 +105,31 @@ export default function App({ handleLogoutCallback }) {
           value={isEnabled}
         />
       </View>
-      <View>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: latitude,
-            longitude: longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          onPress={() => handleOpen}
-        >
-          <Marker coordinate={coordinates} pinColor="#157106" />
 
-          <Marker coordinate={coordinatesF} onPress={handleOpen}>
-            <Callout tooltip>
-              <TouchableHighlight underlayColor="#dddddd">
-                <View>
-                  <Text></Text>
-                </View>
-              </TouchableHighlight>
-            </Callout>
-          </Marker>
-
-          <Circle
-            onPress={() => console.log("pressed")}
-            center={coordinates}
-            radius={2000}
-            strokeWidth={1}
-            strokeColor={"#C86F6F"}
-            fillColor={"rgba(230,238,255,0.5)"}
-          />
-
-          <Circle
-            onPress={() => console.log("pressed")}
-            center={coordinates}
-            radius={1000}
-            strokeWidth={1}
-            strokeColor={"#1a66ff"}
-            fillColor={"rgba(230,238,255,0.5)"}
-            zIndex={3}
-          />
-          <Circle
-            onPress={() => console.log("pressed")}
-            center={coordinates}
-            radius={3000}
-            strokeWidth={1}
-            strokeColor={"#1a66ff"}
-            fillColor={"rgba(230,238,255,0.5)"}
-            zIndex={1}
-          />
-        </MapView>
-      </View>
+      {friends && friends["1"].length > 0 ? (
+        <View>
+          <Text style={styles.title}>1 mile away</Text>
+          {FlatListBasics(1)}
+        </View>
+      ) : (
+        <View />
+      )}
+      {friends && friends["2"].length > 0 ? (
+        <View>
+          <Text style={styles.title}>2 mile away</Text>
+          {FlatListBasics(2)}
+        </View>
+      ) : (
+        <View />
+      )}
+      {friends && friends["3"].length > 0 ? (
+        <View>
+          <Text style={styles.title}>3 mile away</Text>
+          {FlatListBasics(3)}
+        </View>
+      ) : (
+        <View />
+      )}
 
       <Modal
         animationType="fade"
@@ -181,7 +168,7 @@ export default function App({ handleLogoutCallback }) {
                 uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
               }}
             />
-            <Text style={{ fontSize: 28 }}>Arnaud Mutabazi</Text>
+            <Text style={{ fontSize: 28 }}>{clickedFriend}</Text>
             <Text>Quick Texts</Text>
             <View style={{ width: "80%", marginTop: 10 }}>
               <TouchableOpacity style={{ flexDirection: "column" }}>
@@ -295,5 +282,12 @@ const styles = StyleSheet.create({
     margin: 12,
     width: "80%",
     padding: 10,
+  },
+  title: {
+    backgroundColor: "white",
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: "bold",
+    padding: 5,
   },
 });
