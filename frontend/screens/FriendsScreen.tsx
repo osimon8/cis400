@@ -39,8 +39,9 @@ export default function FriendScreen({ navigation, friends }) {
     firstName: string,
     lastName: string
   ) => {
+    console.log("testing", id);
     navigation.navigate("message", {
-      id: id,
+      friendId: id,
       firstName: firstName,
       lastName: lastName,
     });

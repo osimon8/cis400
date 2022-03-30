@@ -1,19 +1,114 @@
-import { Text, View, StatusBar } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Text,
+  View,
+  StatusBar,
+  TextInput,
+  Button,
+  StyleSheet,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import AppHeader from "../components/Header";
 import { useRoute } from "@react-navigation/native";
+import { UserContext } from "../Context";
+import { getChatMessages, sendMessage } from "../api";
 
 export default function MessageScreen({ navigation }) {
+  const authToken = useContext(UserContext);
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
   const route = useRoute();
 
   const goBack = () => {
     navigation.goBack();
   };
+
+  useEffect(() => {
+    getChatMessages(authToken, route.params.friendId)
+      .then((result) => {
+        setMessages(result.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handleSendingMessage = () => {
+    if (message.match(/(?!^ +$)^.+$/)) {
+      let trimmedMessage = message.trim();
+      sendMessage(authToken, route.params.friendId, trimmedMessage)
+        .then((response) => {
+          console.log("testing chating", response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
   return (
-    <View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <AppHeader
         ret={goBack}
         header={`${route.params.firstName} ${route.params.lastName}`}
-      />
-    </View>
+      ></AppHeader>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#DDDDDD",
+              borderRadius: 40,
+              paddingLeft: 15,
+              paddingRight: 15,
+            }}
+          >
+            <View style={{ flex: 2.25 }}>
+              <TextInput
+                value={message}
+                style={styles.input}
+                placeholder="useless placeholder"
+                onChangeText={(e) => {
+                  setMessage(e);
+                }}
+              />
+            </View>
+
+            <View style={{ flex: 0.75 }}>
+              <Button title="send" onPress={handleSendingMessage} />
+            </View>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  inner: {
+    marginBottom: "10%",
+    marginLeft: 10,
+    marginRight: 10,
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  input: {
+    height: 30,
+    width: "80%",
+    padding: 10,
+  },
+  btnContainer: {
+    backgroundColor: "white",
+    marginTop: 12,
+  },
+});

@@ -112,34 +112,3 @@ export default function App({ navigation }) {
     </UserContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  containerLogin: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  input: {
-    width: "90%",
-    marginVertical: 5,
-    borderWidth: 0,
-    borderBottomWidth: 1,
-    padding: 10,
-  },
-
-  text: {
-    fontWeight: "bold",
-    paddingBottom: 5,
-  },
-
-  hyperlink: {
-    color: "blue",
-    textDecorationLine: "underline",
-  },
-});

@@ -11,7 +11,7 @@ async function getValueFor(key: string) {
   }
 }
 
-const baseUrl = "http://10.102.174.161:3000/";
+const baseUrl = "http://10.102.197.97:3000/";
 //Login
 export const login = (email: String, password: String) => {
   return axios.post(`${baseUrl}users/login`, {
@@ -86,5 +86,29 @@ export const getNearbyFriends = (token: string) => {
     url: `${baseUrl}location/getFriendsNearby/`,
     method: "GET",
     headers: { Auth: `${token}` },
+  });
+};
+
+export const sendMessage = (
+  token: string,
+  friendId: string,
+  message: string
+) => {
+  return axios({
+    url: `${baseUrl}chat/sendMsg`,
+    method: "POST",
+    headers: { Auth: `${token}` },
+    data: {
+      friendId: friendId,
+      msg: message,
+    },
+  });
+};
+
+export const getChatMessages = (token: string, friendId: string) => {
+  return axios({
+    url: `${baseUrl}chat/getChat`,
+    method: "GET",
+    headers: { Auth: `${token}`, friendId: friendId },
   });
 };

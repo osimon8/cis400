@@ -1,10 +1,10 @@
 import React from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 
-export default function Button({ onPress }) {
+export default function Button({ onPress, title }) {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>{"test"}</Text>
+      <Text style={styles.text}>{title}</Text>
     </Pressable>
   );
 }

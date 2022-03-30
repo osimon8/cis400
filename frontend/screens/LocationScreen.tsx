@@ -1,5 +1,3 @@
-// import * as React from 'react';
-
 import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
@@ -17,26 +15,28 @@ import {
   SectionList,
 } from "react-native";
 import * as Location from "expo-location";
-import * as SecureStore from "expo-secure-store";
-import { getNearbyFriends, setUserLocation } from "../api";
+import { getNearbyFriends, sendMessage, setUserLocation } from "../api";
 import { UserContext } from "../Context";
 import { FriendItemList } from "../components/FriendItemList";
 
-export default function LocationScreen({ handleLogoutCallback }) {
+export default function LocationScreen({ navigation, handleLogoutCallback }) {
   const authToken = useContext(UserContext);
   const [location, setLocation] = useState(null);
   const [latitude, setLatitude] = useState(1.9441);
   const [friends, setFriends] = useState(null);
   const [clickedFriend, setClickedFriend] = useState("");
+  const [clickedFriendId, setClickedFriendId] = useState("");
   const [longitude, setLongitude] = useState(30.0619);
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [message, setMessage] = useState("");
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   //retrieves the users location
 
   const handleOpen = (id: string, firstName: string, lastName: string) => {
     setClickedFriend(`${firstName} ${lastName}`);
+    setClickedFriendId(id);
     setModalVisible(true);
   };
   useEffect(() => {
@@ -90,9 +90,28 @@ export default function LocationScreen({ handleLogoutCallback }) {
       </View>
     );
   };
+
+  const handleSendingMessage = () => {
+    if (message.match(/(?!^ +$)^.+$/)) {
+      let trimmedMessage = message.trim();
+      sendMessage(authToken, clickedFriendId, trimmedMessage)
+        .then((response) => {
+          console.log("testing chating", response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setModalVisible(!modalVisible);
+      navigation.navigate("message", {
+        friendId: clickedFriendId,
+        firstName: clickedFriend.split(" ")[0],
+        lastName: clickedFriend.split(" ")[1],
+      });
+    }
+  };
   return (
     <View style={styles.container}>
-      <View
+      {/* <View
         style={{ backgroundColor: "white", height: 40, flexDirection: "row" }}
       >
         <Button title="Logout" onPress={() => handleLogoutCallback()} />
@@ -104,7 +123,7 @@ export default function LocationScreen({ handleLogoutCallback }) {
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
-      </View>
+      </View> */}
 
       {friends && friends["1"].length > 0 ? (
         <View>
@@ -157,7 +176,11 @@ export default function LocationScreen({ handleLogoutCallback }) {
               >
                 <Button
                   title="Close"
-                  onPress={() => setModalVisible(!modalVisible)}
+                  onPress={() => {
+                    //clear the message in the modal
+                    setMessage("");
+                    setModalVisible(!modalVisible);
+                  }}
                 ></Button>
               </View>
             </View>
@@ -171,17 +194,30 @@ export default function LocationScreen({ handleLogoutCallback }) {
             <Text style={{ fontSize: 28 }}>{clickedFriend}</Text>
             <Text>Quick Texts</Text>
             <View style={{ width: "80%", marginTop: 10 }}>
-              <TouchableOpacity style={{ flexDirection: "column" }}>
+              <TouchableOpacity
+                style={{ flexDirection: "column" }}
+                onPress={() => {
+                  setMessage("Wanna get some lunch?");
+                }}
+              >
                 <View style={styles.button}>
                   <Text>Wanna get some lunch?</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setMessage("What are you up to?");
+                }}
+              >
                 <View style={styles.button}>
                   <Text>What are you up to?</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setMessage("Wanna grab a drink?");
+                }}
+              >
                 <View style={styles.button}>
                   <Text>Wanna grab a drink?</Text>
                 </View>
@@ -192,7 +228,8 @@ export default function LocationScreen({ handleLogoutCallback }) {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                backgroundColor: "#DDDDDD",
+                borderWidth: 1,
+                borderColor: "#DDDDDD",
                 borderRadius: 40,
                 paddingLeft: 15,
                 paddingRight: 15,
@@ -201,16 +238,17 @@ export default function LocationScreen({ handleLogoutCallback }) {
             >
               <View style={{ flex: 2.25 }}>
                 <TextInput
+                  value={message}
                   style={styles.input}
                   placeholder="useless placeholder"
+                  onChangeText={(e) => {
+                    setMessage(e);
+                  }}
                 />
               </View>
 
               <View style={{ flex: 0.75 }}>
-                <Button
-                  title="send"
-                  onPress={() => setModalVisible(!modalVisible)}
-                />
+                <Button title="send" onPress={handleSendingMessage} />
               </View>
             </View>
           </View>
@@ -279,7 +317,6 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 30,
-    margin: 12,
     width: "80%",
     padding: 10,
   },

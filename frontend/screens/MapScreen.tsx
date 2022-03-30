@@ -32,7 +32,6 @@ export default function App({ handleLogoutCallback }) {
   const coordinates = { latitude: latitude, longitude: longitude };
   const coordinatesF = { latitude: 39.96241611314298, longitude: longitude };
   const handleOpen = () => {
-    console.log("helloo");
     setModalVisible(true);
   };
   useEffect(() => {
