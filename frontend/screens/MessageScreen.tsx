@@ -11,6 +11,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  FlatList,
 } from "react-native";
 import AppHeader from "../components/Header";
 import { useRoute } from "@react-navigation/native";
@@ -27,10 +28,34 @@ export default function MessageScreen({ navigation }) {
     navigation.goBack();
   };
 
+  const FlatListBasics = () => {
+    return (
+      <View>
+        <FlatList
+          data={messages}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                backgroundColor: "#8dc673",
+                padding: 10,
+                margin: 5,
+                borderRadius: 5,
+                maxWidth: "75%",
+              }}
+            >
+              <Text>{item.text}</Text>
+            </View>
+          )}
+        />
+      </View>
+    );
+  };
+
   useEffect(() => {
     getChatMessages(authToken, route.params.friendId)
       .then((result) => {
         setMessages(result.data);
+        console.log(result.data);
       })
       .catch((error) => {
         console.log(error);
@@ -59,6 +84,7 @@ export default function MessageScreen({ navigation }) {
       ></AppHeader>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
+          <View>{FlatListBasics()}</View>
           <View
             style={{
               flexDirection: "row",
