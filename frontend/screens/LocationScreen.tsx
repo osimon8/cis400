@@ -78,7 +78,7 @@ export default function LocationScreen({ navigation, handleLogoutCallback }) {
     text = errorMsg;
   } else if (location) {
   }
-  const FlatListBasics = (distance) => {
+  const FlatListBasics = (distance: Number) => {
     return (
       <View>
         <FlatList
@@ -102,6 +102,7 @@ export default function LocationScreen({ navigation, handleLogoutCallback }) {
           console.log(err);
         });
       setModalVisible(!modalVisible);
+      setMessage("");
       navigation.navigate("message", {
         friendId: clickedFriendId,
         firstName: clickedFriend.split(" ")[0],

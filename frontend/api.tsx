@@ -11,7 +11,7 @@ async function getValueFor(key: string) {
   }
 }
 
-const baseUrl = "http://10.103.88.29:3000/";
+const baseUrl = "http://10.102.229.18:3000/";
 //Login
 export const login = (email: String, password: String) => {
   return axios.post(`${baseUrl}users/login`, {

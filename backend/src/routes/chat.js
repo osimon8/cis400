@@ -103,14 +103,14 @@ router.get("/getChat", authenticate, function (req, res, next) {
   }
 
   database.query(
-    "SELECT * from CHATS WHERE userId=? AND friendId=?",
-    [userId, friendId],
+    "SELECT * from CHATS WHERE (userId=? AND friendId=?) OR (userId=? AND friendId=?)",
+    [userId, friendId, friendId, userId],
     function (error, results) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
       } else {
-        if (results[0].length == 0) {
+        if (results[0] && results[0].length == 0) {
           res.status(404);
           res.send("User not found");
         } else {

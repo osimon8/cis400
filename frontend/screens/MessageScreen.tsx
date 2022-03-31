@@ -17,6 +17,7 @@ import AppHeader from "../components/Header";
 import { useRoute } from "@react-navigation/native";
 import { UserContext } from "../Context";
 import { getChatMessages, sendMessage } from "../api";
+import Bubble from "../components/Bubble";
 
 export default function MessageScreen({ navigation }) {
   const authToken = useContext(UserContext);
@@ -33,17 +34,21 @@ export default function MessageScreen({ navigation }) {
       <View>
         <FlatList
           data={messages}
+          style={{}}
           renderItem={({ item }) => (
             <View
               style={{
-                backgroundColor: "#8dc673",
-                padding: 10,
-                margin: 5,
-                borderRadius: 5,
-                maxWidth: "75%",
+                width: "75%",
+                alignSelf:
+                  item.userId === route.params.friendId
+                    ? "flex-start"
+                    : "flex-end",
               }}
             >
-              <Text>{item.text}</Text>
+              <Bubble
+                text={item.text}
+                border={item.userId === route.params.friendId}
+              />
             </View>
           )}
         />
@@ -81,7 +86,7 @@ export default function MessageScreen({ navigation }) {
       <AppHeader
         ret={goBack}
         header={`${route.params.firstName} ${route.params.lastName}`}
-      ></AppHeader>
+      />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <View>{FlatListBasics()}</View>

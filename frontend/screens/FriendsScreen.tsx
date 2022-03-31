@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  listContainer: {},
   mainText: {
     fontSize: 18,
   },
