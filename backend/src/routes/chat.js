@@ -93,9 +93,13 @@ router.post(
   sendNotification
 );
 
-router.get("/getChat", authenticate, function (req, res, next) {
-  const { userId } = res.locals;
+router.get("/getChat", 
+authenticate, 
+function (req, res, next) {
+  const {userId} = res.locals;
   const friendId = req.headers.friendid;
+  //const {userId, friendId} = req.body
+  //console.log(friendId);
   if (!userId || !friendId) {
     res.status(400);
     res.send("Invalid email");
@@ -103,8 +107,8 @@ router.get("/getChat", authenticate, function (req, res, next) {
   }
 
   database.query(
-    "SELECT * from CHATS WHERE userId=? AND friendId=?",
-    [userId, friendId],
+    "SELECT * from CHATS WHERE userId=? AND friendId=? OR userId=? AND friendId=? ORDER BY timestamp DESC",
+    [userId, friendId, friendId, userId],
     function (error, results) {
       if (error) {
         console.log(error);
