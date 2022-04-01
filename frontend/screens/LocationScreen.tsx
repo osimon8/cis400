@@ -19,7 +19,17 @@ import { getNearbyFriends, sendMessage, setUserLocation } from "../api";
 import { UserContext } from "../Context";
 import { FriendItemList } from "../components/FriendItemList";
 
-export default function LocationScreen({ navigation, handleLogoutCallback }) {
+export default function LocationScreen({
+  navigation,
+  handleLogoutCallback,
+}: {
+  navigation: any;
+  handleLogoutCallBack: (
+    email: String,
+    pass: String,
+    cl: (err: string) => void
+  ) => void;
+}) {
   const authToken = useContext(UserContext);
   const [location, setLocation] = useState(null);
   const [latitude, setLatitude] = useState(1.9441);
@@ -112,7 +122,7 @@ export default function LocationScreen({ navigation, handleLogoutCallback }) {
   };
   return (
     <View style={styles.container}>
-      {/* <View
+      <View
         style={{ backgroundColor: "white", height: 40, flexDirection: "row" }}
       >
         <Button title="Logout" onPress={() => handleLogoutCallback()} />
@@ -124,7 +134,7 @@ export default function LocationScreen({ navigation, handleLogoutCallback }) {
           onValueChange={toggleSwitch}
           value={isEnabled}
         />
-      </View> */}
+      </View>
 
       {friends && friends["1"].length > 0 ? (
         <View>

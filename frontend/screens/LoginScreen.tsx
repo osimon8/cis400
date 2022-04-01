@@ -9,13 +9,33 @@ import {
   Button,
   SafeAreaView,
 } from "react-native";
-import { login } from "../api";
 
-export default function LoginScreen({ navigation, handleLoginCallBack }) {
+export default function LoginScreen({
+  navigation,
+  handleLoginCallBack,
+}: {
+  navigation: any;
+  handleLoginCallBack: (
+    email: String,
+    password: String,
+    callBack: (error: string) => void
+  ) => void;
+}) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
+
+  const handleSetError = (error: string) => {
+    setErrorMessage(error);
+  };
   const handleLogin = () => {
-    handleLoginCallBack(email, password);
+    if (email === "" || password === "") {
+      setErrorMessage("Email and Password can't be empty");
+    } else {
+      let trimmedEmail = email.trim();
+      let trimmedPassword = email.trim();
+      handleLoginCallBack(trimmedEmail, trimmedPassword, handleSetError);
+    }
   };
   const handleRegistration = () => {
     navigation.navigate("Registration");
@@ -23,15 +43,17 @@ export default function LoginScreen({ navigation, handleLoginCallBack }) {
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder="Username"
+        placeholder="Email"
         style={styles.input}
         onChangeText={setEmail}
       />
       <TextInput
+        secureTextEntry={true}
         placeholder="Password"
         style={styles.input}
         onChangeText={setPassword}
       />
+      <Text style={{ color: "red" }}>{errorMessage}</Text>
       <Text style={styles.text}>
         Don't have an account?{" "}
         <Text style={styles.hyperlink} onPress={handleRegistration}>

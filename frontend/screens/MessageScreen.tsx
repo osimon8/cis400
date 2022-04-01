@@ -19,7 +19,7 @@ import { UserContext } from "../Context";
 import { getChatMessages, sendMessage } from "../api";
 import Bubble from "../components/Bubble";
 
-export default function MessageScreen({ navigation }) {
+export default function MessageScreen({ navigation }: { navigation: any }) {
   const authToken = useContext(UserContext);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -33,11 +33,13 @@ export default function MessageScreen({ navigation }) {
     return (
       <View>
         <FlatList
+          style={{ height: 100 }}
+          scrollEnabled
           data={messages}
-          style={{}}
           renderItem={({ item }) => (
             <View
               style={{
+                marginRight: 5,
                 width: "75%",
                 alignSelf:
                   item.userId === route.params.friendId
@@ -79,46 +81,63 @@ export default function MessageScreen({ navigation }) {
     }
   };
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
         ret={goBack}
         header={`${route.params.firstName} ${route.params.lastName}`}
       />
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <View>{FlatListBasics()}</View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              borderWidth: 1,
-              borderColor: "#DDDDDD",
-              borderRadius: 40,
-              paddingLeft: 15,
-              paddingRight: 15,
-            }}
-          >
-            <View style={{ flex: 2.25 }}>
-              <TextInput
-                value={message}
-                style={styles.input}
-                placeholder="useless placeholder"
-                onChangeText={(e) => {
-                  setMessage(e);
-                }}
-              />
-            </View>
 
-            <View style={{ flex: 0.75 }}>
-              <Button title="send" onPress={handleSendingMessage} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View
+          style={{
+            marginBottom: 10,
+            flex: 1,
+          }}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.inner}>
+              <View
+                style={{
+                  flex: 1,
+                }}
+              >
+                {FlatListBasics()}
+              </View>
+              <View
+                style={{
+                  marginTop: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderWidth: 1,
+                  borderColor: "#DDDDDD",
+                  borderRadius: 40,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                }}
+              >
+                <View style={{ flex: 2.25 }}>
+                  <TextInput
+                    value={message}
+                    style={styles.input}
+                    placeholder="useless placeholder"
+                    onChangeText={(e) => {
+                      setMessage(e);
+                    }}
+                  />
+                </View>
+
+                <View style={{ flex: 0.75 }}>
+                  <Button title="send" onPress={handleSendingMessage} />
+                </View>
+              </View>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -127,9 +146,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inner: {
-    marginBottom: "10%",
     marginLeft: 10,
     marginRight: 10,
+    padding: 10,
     flex: 1,
     justifyContent: "flex-end",
   },
