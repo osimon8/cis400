@@ -10,3 +10,15 @@ CREATE TABLE `User`.`CHATS` (
     REFERENCES `User`.`FRIENDS` (`userId`, `friendId`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
+
+--ONLINE
+CREATE TABLE `User`.`ONLINE` (
+  `id` VARCHAR(128) NOT NULL,
+  `status` TINYINT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `idOnline_UNIQUE` (`id` ASC) VISIBLE,
+  CONSTRAINT `fk id`
+    FOREIGN KEY (`id`)
+    REFERENCES `User`.`USERS` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
