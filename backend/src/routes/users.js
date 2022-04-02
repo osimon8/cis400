@@ -5,11 +5,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const saltRounds = 10;
 const { authenticate } = require("./utils");
+const multer = require("multer");
+const upload_pfp = multer({ storage: multer.memoryStorage() }).single("pfp");
+// const upload_pfp = multer({ dest: "assets" }).single("pfp");
+const cors = require("cors");
 
 const { database } = require("../database/db");
 
 // import { v4 as uuid } from "uuid";
 const { v4: uuid, validate } = require("uuid");
+// router.use(express.static("assets"));
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -38,6 +43,26 @@ router.get("/get/:email", function (req, res, next) {
   database.query(
     "SELECT * from USERS WHERE email=?;",
     [email],
+    function (error, results) {
+      if (error) {
+        res.sendStatus(500);
+      } else {
+        if (results.length == 0) {
+          res.status(404);
+          res.send("User not found");
+        } else {
+          res.send(results[0]);
+        }
+      }
+    }
+  );
+});
+
+router.get("/getProfile", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  database.query(
+    "SELECT id, email, firstName, lastName from USERS WHERE id=?;",
+    [userId],
     function (error, results) {
       if (error) {
         res.sendStatus(500);
@@ -203,6 +228,60 @@ router.post("/setOnline", authenticate, async function (req, res, next) {
         res.sendStatus(500);
       } else {
         res.sendStatus(200);
+      }
+    }
+  );
+});
+
+router.options("/uploadPFP", cors());
+
+router.post(
+  "/uploadPFP",
+  cors(),
+  authenticate,
+  upload_pfp,
+  function (req, res, next) {
+    const { userId } = res.locals;
+    const file = req.file;
+    if (!file) {
+      res.status(400).send("Missing file");
+      return;
+    }
+    database.query(
+      "UPDATE USERS SET pfp=? WHERE id=?;",
+      [file.buffer, userId],
+      function (error, results) {
+        if (error) {
+          console.log(error);
+          res.sendStatus(500);
+        } else {
+          res.sendStatus(200);
+        }
+      }
+    );
+  }
+);
+
+router.get("/getPFP", async function (req, res, next) {
+  const { userId } = req.body;
+  database.query(
+    "SELECT pfp FROM USERS WHERE id=?;",
+    [userId],
+    function (error, results) {
+      if (error) {
+        res.sendStatus(500);
+      } else {
+        if (results.length == 0) {
+          res.sendStatus(404);
+          return;
+        }
+        const { pfp } = results[0];
+        if (pfp) {
+          res.type("png");
+          res.end(pfp);
+        } else {
+          res.sendFile("pfp.png", { root: "assets" });
+        }
       }
     }
   );
