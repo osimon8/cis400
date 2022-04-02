@@ -45,7 +45,9 @@ export default function LocationScreen({
     setModalVisible(true);
   };
   console.log("retreived", { friends, retrievedFriends });
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setFriends(retrievedFriends);
+  }, []);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -84,6 +86,7 @@ export default function LocationScreen({
       });
     }
   };
+
   return (
     <View style={styles.container}>
       {/* <View

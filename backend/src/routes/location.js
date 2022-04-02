@@ -64,6 +64,42 @@ router.get("/distance", async function (req, res, next) {
   });
 });
 
+router.post("/share", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  const { friendId } = req.body;
+  if (!friendId) {
+    res.statusCode = 400;
+    res.send("Missing friendId");
+    return;
+  }
+  database.query(
+    "SELECT * FROM FRIENDS WHERE userId=? AND friendId=?;",
+    [userId, friendId],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else if (results.length == 0) {
+        res.statusCode = 403;
+        res.send("Users are not friends");
+      } else {
+        database.query(
+          "INSERT INTO SHARING (userId, friendId) VALUES (?,?) ON DUPLICATE KEY UPDATE userId=?,friendId=?;",
+          [userId, friendId, userId, friendId],
+          function (error) {
+            if (error) {
+              console.log(error);
+              res.sendStatus(500);
+            } else {
+              res.sendStatus(200);
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
 router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   const radii = [1, 2, 3]; // miles
@@ -76,14 +112,17 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
   	JOIN USERS as f ON friendId = f.id
     JOIN LOCATION as l1 ON f.id = l1.user_id  
     JOIN LOCATION as l2 ON u.id = l2.user_id
-    WHERE userId = ? AND status=true`,
-    [userId],
+    WHERE userId = ? AND status=1; 
+    SELECT userId as id, latitude, longitude FROM SHARING JOIN LOCATION ON userId=user_id WHERE friendId=?;`,
+    [userId, userId],
     function (error, results) {
       if (error) {
         console.log(error);
         res.sendStatus(500);
         return;
       }
+      const dists = results[0];
+      const shares = results[1];
 
       const f = (v) => {
         const { id, email, firstName, lastName, lat1, long1, lat2, long2 } = v;
@@ -95,7 +134,7 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
         return { id, email, firstName, lastName, distance: d };
       };
 
-      const mapped = results.map(f);
+      const mapped = dists.map(f);
       let entries = radii.map((rad, i) => {
         const in_range = mapped.filter((v) => {
           const { distance } = v;
@@ -107,7 +146,8 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
         });
         return [rad, ls];
       });
-      res.send(Object.fromEntries(entries));
+      const rads = Object.fromEntries(entries);
+      res.send({ ...rads, shared: shares });
     }
   );
 });

@@ -58,20 +58,23 @@ router.get("/get/:email", function (req, res, next) {
   );
 });
 
-router.get("/getProfile", authenticate, async function (req, res, next) {
-  const { userId } = res.locals;
+router.get("/getProfile/:userId", async function (req, res, next) {
+  const { userId } = req.params;
   database.query(
-    "SELECT id, email, firstName, lastName from USERS WHERE id=?;",
+    "SELECT u.id, email, firstName, lastName, status from USERS u JOIN ONLINE o ON u.id=o.id WHERE u.id=?;",
     [userId],
     function (error, results) {
       if (error) {
+        console.log(error);
         res.sendStatus(500);
       } else {
         if (results.length == 0) {
           res.status(404);
           res.send("User not found");
         } else {
-          res.send(results[0]);
+          const data = results[0];
+          const { status, id, email, firstName, lastName } = data;
+          res.send({ id, email, firstName, lastName, online: status == 1 });
         }
       }
     }
