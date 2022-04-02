@@ -100,6 +100,21 @@ router.post("/share", authenticate, async function (req, res, next) {
   );
 });
 
+router.post("/validateSharings", async function (req, res, next) {
+  database.query(
+    "DELETE FROM SHARING WHERE timestamp < DATE_SUB(NOW(), INTERVAL 30 MINUTE)",
+    [],
+    function (err) {
+      if (err) {
+        console.log(err);
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    }
+  );
+});
+
 router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   const radii = [1, 2, 3]; // miles

@@ -7,14 +7,11 @@ const saltRounds = 10;
 const { authenticate } = require("./utils");
 const multer = require("multer");
 const upload_pfp = multer({ storage: multer.memoryStorage() }).single("pfp");
-// const upload_pfp = multer({ dest: "assets" }).single("pfp");
 const cors = require("cors");
 
 const { database } = require("../database/db");
 
-// import { v4 as uuid } from "uuid";
-const { v4: uuid, validate } = require("uuid");
-// router.use(express.static("assets"));
+const { v4: uuid } = require("uuid");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -121,7 +118,7 @@ router.post("/login", async function (req, res, next) {
     [email],
     async function (error, results) {
       if (error) {
-        console.error(error)
+        console.error(error);
         res.sendStatus(500);
       } else {
         if (results.length == 0) {
