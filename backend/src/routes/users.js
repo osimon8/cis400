@@ -183,7 +183,7 @@ router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   //changed the querry to retrieve the firstname, lastname, and email
   database.query(
-    "SELECT * from (SELECT friendId FROM FRIENDS WHERE userId=?) a Join USERS ON a.friendId = USERS.id;",
+    "SELECT id, email, firstname, lastname from (SELECT friendId FROM FRIENDS WHERE userId=?) a Join USERS ON a.friendId = USERS.id;",
     [userId],
     function (error, results) {
       if (error) {
