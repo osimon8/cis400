@@ -287,11 +287,16 @@ router.get("/getPFP", async function (req, res, next) {
   );
 });
 
-router.get("/search", async function (req, res, next) {
+router.get("/search", authenticate, async function (req, res, next) {
   const { input } = req.query;
-  console.log("input", input);
+  const { userId } = res.locals;
   database.query(
-    `SELECT id, firstName, lastName, email FROM USERS WHERE email LIKE '%${input}%';`,
+    `SELECT id, firstName, lastName, email, IFNULL(status,0) as status FROM
+    (SELECT id, firstName, lastName, email
+    FROM USERS WHERE email LIKE CONCAT('%',?,'%') AND id <> ?) a 
+    LEFT OUTER JOIN FRIENDS on id = friendId and userId = ?
+    `,
+    [input, userId, userId],
     function (error, results) {
       if (error) {
         console.log(error);
