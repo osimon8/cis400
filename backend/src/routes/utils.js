@@ -15,7 +15,9 @@ const authenticate = (req, res, next) => {
    */
   jwt.verify(token, "12345", (err, decoded) => {
     if (err) {
-      res.sendStatus(400);
+      console.log(err);
+      res.status("Couldn't validate authentication token");
+      res.send(401);
       return;
     } else {
       res.locals.userId = decoded.userId;
