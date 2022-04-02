@@ -121,6 +121,7 @@ router.post("/login", async function (req, res, next) {
     [email],
     async function (error, results) {
       if (error) {
+        console.error(error)
         res.sendStatus(500);
       } else {
         if (results.length == 0) {

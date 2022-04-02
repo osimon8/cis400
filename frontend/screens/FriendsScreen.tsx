@@ -7,10 +7,11 @@ import {
   FlatList,
   TouchableHighlight,
 } from "react-native";
-import { searchUser, addFriend, getFriends } from "../api";
-import { Feather } from "@expo/vector-icons";
 import { SearchBar } from "react-native-elements";
-import * as SecureStore from "expo-secure-store";
+import { SafeAreaView } from "react-native-safe-area-context"
+
+import { searchUser, addFriend, getFriends } from "../api";
+
 
 export default function FriendScreen({ navigation, friends }) {
   const [search, setSearch] = useState("");
@@ -108,9 +109,9 @@ export default function FriendScreen({ navigation, friends }) {
   };
 
   return (
-    <View>
+    <SafeAreaView>
       <SearchBar
-        placeholder="Type Here..."
+        placeholder="Search your friends"
         platform="ios"
         lightTheme
         round
@@ -118,7 +119,7 @@ export default function FriendScreen({ navigation, friends }) {
         value={search}
       />
       <View style={styles.listContainer}>{FlatListBasics()}</View>
-    </View>
+    </SafeAreaView>
   );
 }
 

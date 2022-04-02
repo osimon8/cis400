@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
+import { FontAwesome5, FontAwesome, Entypo } from "@expo/vector-icons";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import App from "./MapScreen";
-import LocationScreen from "./LocationScreen";
-import FriendScreen from "./FriendsScreen";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
-import MessagesScreen from "./MessagesScreen";
-import * as SecureStore from "expo-secure-store";
+
 import { getFriends } from "../api";
 import { UserContext } from "../Context";
+import FriendScreen from "./FriendsScreen";
+import MessagesScreen from "./MessagesScreen";
 import MyBuddies from "./MyBuddies";
 
 const Tab = createBottomTabNavigator();
@@ -28,9 +25,13 @@ export default function TabScreen({ handleLogoutCallBack }) {
       });
   }, []);
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false
+      }}
+    >
       <Tab.Screen
-        name="MyBuddies"
+        name="Map"
         options={{
           tabBarIcon: () => <FontAwesome name="map" size={24} color="black" />,
         }}

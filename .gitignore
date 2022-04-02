@@ -1,1 +1,3 @@
 node_modules/
+frontend/.expo/*
+frontend/.expo/web/cache/development/babel-loader/0b29607a5598c1f1531468dd9611b996.json

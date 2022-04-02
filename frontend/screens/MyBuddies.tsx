@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Text, View, StyleSheet, Switch } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import {
   getNearbyFriends,
@@ -31,13 +32,13 @@ export default function MyBuddies({
   const [clickedFriendId, setClickedFriendId] = useState("");
   const [longitude, setLongitude] = useState(30.0619);
   const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isEnabledAvailability, setIsEnabledAvailability] = useState(true);
   const [isEnabledViews, setIsEnabledViews] = useState(false);
   const [message, setMessage] = useState("");
   const toggleSwitchAvailability = () => {
     setOnlineStatus(authToken, !isEnabledAvailability)
-      .then((res) => {
+      .then(() => {
         console.log("success setting status");
         setIsEnabledAvailability((previousState) => !previousState);
       })
@@ -94,7 +95,7 @@ export default function MyBuddies({
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View
         style={{
           flexDirection: "row",
@@ -148,7 +149,7 @@ export default function MyBuddies({
       ) : (
         <LocationScreen navigation={navigation} retrievedFriends={friends} />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
