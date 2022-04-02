@@ -26,7 +26,6 @@ export const register = (
   firstName: String,
   lastName: String
 ) => {
-  console.log("input", [email, password, firstName, lastName]);
   return axios.post(`${baseUrl}users/create`, {
     email: email,
     password: password,
@@ -46,7 +45,7 @@ export const addFriend = (id: string) => {
     axios({
       url: `${baseUrl}users/addFriend`,
       method: "POST",
-      headers: { Auth: `${res}` },
+      headers: { Authorization: `${res}` },
       data: {
         friendId: id,
       },
@@ -64,7 +63,7 @@ export const getFriends = (token: string) => {
   return axios({
     url: `${baseUrl}users/getFriends`,
     method: "GET",
-    headers: { Auth: `${token}` },
+    headers: { Authorization: `${token}` },
   });
 };
 
@@ -77,7 +76,7 @@ export const setUserLocation = (
     url: `${baseUrl}location/set`,
     method: "POST",
     data: { longitude: longitude, latitude: latitude },
-    headers: { Auth: `${token}` },
+    headers: { Authorization: `${token}` },
   });
 };
 
@@ -85,7 +84,7 @@ export const getNearbyFriends = (token: string) => {
   return axios({
     url: `${baseUrl}location/getFriendsNearby/`,
     method: "GET",
-    headers: { Auth: `${token}` },
+    headers: { Authorization: `${token}` },
   });
 };
 
@@ -97,7 +96,7 @@ export const sendMessage = (
   return axios({
     url: `${baseUrl}chat/sendMsg`,
     method: "POST",
-    headers: { Auth: `${token}` },
+    headers: { Authorization: `${token}` },
     data: {
       friendId: friendId,
       msg: message,
@@ -105,10 +104,23 @@ export const sendMessage = (
   });
 };
 
-export const getChatMessages = (token: string, friendId: string) => {
+export const getChatMessages = (
+  token: string,
+  friendId: string,
+  limit: Number
+) => {
   return axios({
-    url: `${baseUrl}chat/getChat`,
+    url: `${baseUrl}chat/getChat?limit=${limit}`,
     method: "GET",
-    headers: { Auth: `${token}`, friendId: friendId },
+    headers: { Authorization: `${token}`, friendId: friendId },
+  });
+};
+
+export const setOnlineStatus = (token: string, status: Boolean) => {
+  return axios({
+    url: `${baseUrl}users/setOnline`,
+    method: "POST",
+    headers: { Authorization: `${token}` },
+    data: { online: status },
   });
 };

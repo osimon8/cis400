@@ -33,7 +33,7 @@ export default function LoginScreen({
       setErrorMessage("Email and Password can't be empty");
     } else {
       let trimmedEmail = email.trim();
-      let trimmedPassword = email.trim();
+      let trimmedPassword = password.trim();
       handleLoginCallBack(trimmedEmail, trimmedPassword, handleSetError);
     }
   };

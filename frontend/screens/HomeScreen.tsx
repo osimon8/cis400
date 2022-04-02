@@ -10,13 +10,13 @@ import MessagesScreen from "./MessagesScreen";
 import * as SecureStore from "expo-secure-store";
 import { getFriends } from "../api";
 import { UserContext } from "../Context";
+import MyBuddies from "./MyBuddies";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabScreen({ handleLogoutCallBack }) {
   //retrieve the authToken from the context
   const authToken = useContext(UserContext);
-  console.log("authToken", authToken);
   const [friends, setFriends] = useState([]);
   useEffect(() => {
     getFriends(authToken)
@@ -30,17 +30,12 @@ export default function TabScreen({ handleLogoutCallBack }) {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="Map"
+        name="MyBuddies"
         options={{
           tabBarIcon: () => <FontAwesome name="map" size={24} color="black" />,
         }}
       >
-        {(props) => (
-          <LocationScreen
-            {...props}
-            handleLogoutCallback={handleLogoutCallBack}
-          />
-        )}
+        {(props) => <MyBuddies handleLogoutCallback={handleLogoutCallBack} />}
       </Tab.Screen>
       <Tab.Screen
         name="Friends"

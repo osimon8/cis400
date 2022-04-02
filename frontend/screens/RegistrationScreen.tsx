@@ -37,20 +37,6 @@ export default function RegistrationScreen({
       });
   };
 
-  const handleInputChange = (val: string, setState: (val: string) => void) => {
-    if (inputValidation(firstName, lastName, email)) {
-      switch (passwordCheck(password, passwordConfirmation)) {
-        case "Passwords match":
-          setDisable(false);
-          break;
-        default:
-          setDisable(true);
-      }
-    } else {
-      setDisable(true);
-    }
-    setState(val);
-  };
   return (
     <View style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -168,6 +154,7 @@ export default function RegistrationScreen({
                   }
                   break;
                 default:
+                  console.log("passwords", { password, val });
                   setDisable(true);
                   setErrorMessage("Password don't match");
                   break;

@@ -83,6 +83,7 @@ router.post("/create", async function (req, res, next) {
 
 router.post("/login", async function (req, res, next) {
   const { email, password } = req.body;
+  console.log("testing the", password);
   if (!email || !password) {
     res.statusCode = 400;
     res.send("Missing email or password");

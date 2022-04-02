@@ -21,19 +21,14 @@ import { FriendItemList } from "../components/FriendItemList";
 
 export default function LocationScreen({
   navigation,
-  handleLogoutCallback,
+  retrievedFriends,
 }: {
   navigation: any;
-  handleLogoutCallBack: (
-    email: String,
-    pass: String,
-    cl: (err: string) => void
-  ) => void;
 }) {
   const authToken = useContext(UserContext);
   const [location, setLocation] = useState(null);
   const [latitude, setLatitude] = useState(1.9441);
-  const [friends, setFriends] = useState(null);
+  const [friends, setFriends] = useState(retrievedFriends);
   const [clickedFriend, setClickedFriend] = useState("");
   const [clickedFriendId, setClickedFriendId] = useState("");
   const [longitude, setLongitude] = useState(30.0619);
@@ -49,39 +44,8 @@ export default function LocationScreen({
     setClickedFriendId(id);
     setModalVisible(true);
   };
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log("hahah", status);
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-      //retrieving the user token
-      getNearbyFriends(authToken)
-        .then((resp) => {
-          setFriends(resp.data);
-          console.log(resp.data);
-        })
-        .catch((error) => {
-          console.log("error near friends", error.message);
-        });
-      //Getting the user location
-      Location.getCurrentPositionAsync({}).then((resp) => {
-        var coords = resp["coords"];
-        setLatitude(coords["latitude"]);
-        setLongitude(coords["longitude"]);
-        //setting the user location in the backend
-        setUserLocation(authToken, coords["longitude"], coords["latitude"])
-          .then((results) => {
-            console.log("location saved", results.status);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    })();
-  }, []);
+  console.log("retreived", { friends, retrievedFriends });
+  useEffect(() => {}, []);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -122,19 +86,50 @@ export default function LocationScreen({
   };
   return (
     <View style={styles.container}>
-      <View
-        style={{ backgroundColor: "white", height: 40, flexDirection: "row" }}
+      {/* <View
+        style={{
+          backgroundColor: "white",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
       >
-        <Button title="Logout" onPress={() => handleLogoutCallback()} />
-        <Switch
-          style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
-          trackColor={{ false: "#ffffff", true: "#ffffff" }}
-          thumbColor={isEnabled ? "#157106" : "#FF0000"}
-          ios_backgroundColor="#fffff"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-      </View>
+        <View
+          style={{
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            marginLeft: 10,
+            marginRight: 10,
+          }}
+        >
+          <Text style={{ padding: 2 }}>{"Availability"}</Text>
+          <Switch
+            // style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
+            trackColor={{ false: "#ffffff", true: "#ffffff" }}
+            thumbColor={isEnabled ? "#157106" : "#FF0000"}
+            ios_backgroundColor="#fffff"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ padding: 2 }}>{"Availability"}</Text>
+          <Switch
+            // style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
+            trackColor={{ false: "#ffffff", true: "#ffffff" }}
+            thumbColor={isEnabled ? "#157106" : "#FF0000"}
+            ios_backgroundColor="#fffff"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
+        </View>
+      </View> */}
 
       {friends && friends["1"].length > 0 ? (
         <View>

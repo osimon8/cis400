@@ -15,15 +15,16 @@ import {
   TextInput,
   Pressable,
 } from "react-native";
-import * as Location from "expo-location";
-import * as SecureStore from "expo-secure-store";
-import { getNearbyFriends, setUserLocation } from "../api";
 
-export default function App({ handleLogoutCallback }) {
+export default function MapScreen({
+  userLongitude,
+  userLatitude,
+  retrievedFriends,
+}) {
   const [location, setLocation] = useState(null);
-  const [latitude, setLatitude] = useState(1.9441);
-  const [friends, setFriends] = useState(null);
-  const [longitude, setLongitude] = useState(30.0619);
+  const [latitude, setLatitude] = useState(userLatitude);
+  const [friends, setFriends] = useState(retrievedFriends);
+  const [longitude, setLongitude] = useState(userLongitude);
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -34,40 +35,7 @@ export default function App({ handleLogoutCallback }) {
   const handleOpen = () => {
     setModalVisible(true);
   };
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log("hahah", status);
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-      //retrieving the user token
-      SecureStore.getItemAsync("authToken").then((auth) => {
-        getNearbyFriends(auth)
-          .then((resp) => {
-            setFriends(resp.data);
-          })
-          .catch((error) => {
-            console.log("error near friends", error.message);
-          });
-        //Getting the user location
-        Location.getCurrentPositionAsync({}).then((resp) => {
-          var coords = resp["coords"];
-          setLatitude(coords["latitude"]);
-          setLongitude(coords["longitude"]);
-          //setting the user location in the backend
-          setUserLocation(auth, coords["longitude"], coords["latitude"])
-            .then((results) => {
-              console.log("location saved", results.status);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        });
-      });
-    })();
-  }, []);
+  useEffect(() => {}, []);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -77,19 +45,6 @@ export default function App({ handleLogoutCallback }) {
   }
   return (
     <View style={styles.container}>
-      <View
-        style={{ backgroundColor: "white", height: 40, flexDirection: "row" }}
-      >
-        <Button title="Logout" onPress={() => handleLogoutCallback()} />
-        <Switch
-          style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
-          trackColor={{ false: "#ffffff", true: "#ffffff" }}
-          thumbColor={isEnabled ? "#157106" : "#FF0000"}
-          ios_backgroundColor="#fffff"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-      </View>
       <View>
         <MapView
           style={styles.map}
@@ -102,16 +57,6 @@ export default function App({ handleLogoutCallback }) {
           onPress={() => handleOpen}
         >
           <Marker coordinate={coordinates} pinColor="#157106" />
-
-          <Marker coordinate={coordinatesF} onPress={handleOpen}>
-            <Callout tooltip>
-              <TouchableHighlight underlayColor="#dddddd">
-                <View>
-                  <Text></Text>
-                </View>
-              </TouchableHighlight>
-            </Callout>
-          </Marker>
 
           <Circle
             onPress={() => console.log("pressed")}

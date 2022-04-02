@@ -33,7 +33,6 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
     return (
       <View>
         <FlatList
-          style={{ height: 100 }}
           scrollEnabled
           data={messages}
           renderItem={({ item }) => (
@@ -59,7 +58,7 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
   };
 
   useEffect(() => {
-    getChatMessages(authToken, route.params.friendId)
+    getChatMessages(authToken, route.params.friendId, 0)
       .then((result) => {
         setMessages(result.data);
         console.log(result.data);

@@ -45,6 +45,7 @@ export default function App({ navigation }: { navigation: any }) {
         setIsLoggedIn(true);
         save("authToken", response.data);
         setToken(response.data);
+        console.log("userINfor", response.data);
         callBack("");
       })
       .catch((error) => {
