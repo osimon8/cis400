@@ -1,17 +1,20 @@
+import React from "react";
+import { useEffect, useState } from "react";
+
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
-import LoginScreen from "./screens/LoginScreen";
-import RegistrationScreen from "./screens/RegistrationScreen";
+import * as SecureStore from "expo-secure-store";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import TabScreen from "./screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useEffect, useState } from "react";
-import MessageScreen from "./screens/MessageScreen";
+import { SafeAreaProvider } from "react-native-safe-area-context"
+
 import { login } from "./api";
-import * as SecureStore from "expo-secure-store";
-import React from "react";
 import { UserContext } from "./Context";
+
+import TabScreen from "./screens/HomeScreen";
+import LoginScreen from "./screens/LoginScreen";
+import RegistrationScreen from "./screens/RegistrationScreen";
+import MessageScreen from "./screens/MessageScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -49,12 +52,16 @@ export default function App({ navigation }: { navigation: any }) {
         callBack("");
       })
       .catch((error) => {
-        switch (error.response.status) {
+        switch (error?.response?.status) {
           case 401:
             callBack("Invalid password");
             break;
           case 404:
             callBack("User not found");
+            break;
+          default:
+            console.error(error)
+            callBack("Not connected to the internet.");
             break;
         }
       });
@@ -70,7 +77,7 @@ export default function App({ navigation }: { navigation: any }) {
       });
   };
   const handleRegistration = () => {
-    navigation.navigate("Registration", { name: "Arnaud" });
+    navigation.navigate("Registration");
   };
   useEffect(() => {
     SecureStore.getItemAsync("authToken").then((response) => {
@@ -79,6 +86,7 @@ export default function App({ navigation }: { navigation: any }) {
   }, []);
 
   return (
+    <SafeAreaProvider>
     <UserContext.Provider value={authToken}>
       <NavigationContainer>
         <StatusBar
@@ -114,5 +122,6 @@ export default function App({ navigation }: { navigation: any }) {
         </Stack.Navigator>
       </NavigationContainer>
     </UserContext.Provider>
+    </SafeAreaProvider>
   );
 }

@@ -15,6 +15,7 @@ import {
   TextInput,
   Pressable,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MapScreen({
   userLongitude,
@@ -44,7 +45,7 @@ export default function MapScreen({
     console.log("hehehe");
   }
   return (
-    <View style={styles.container}>
+    <SafeAreaView >
       <View>
         <MapView
           style={styles.map}
@@ -173,14 +174,11 @@ export default function MapScreen({
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   map: {
     width: "100%",
     height: "100%",
