@@ -8,7 +8,6 @@ export default function Bubble({ text, border }) {
         style={{
           color: "white",
           padding: 0,
-          backgroundColor: "red",
         }}
       >
         {text}
@@ -25,8 +24,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   containerBorder: {
-    borderColor: "#337df4",
-    borderWidth: 0.5,
+    backgroundColor: "#98C455",
     padding: 10,
     margin: 5,
     borderRadius: 15,

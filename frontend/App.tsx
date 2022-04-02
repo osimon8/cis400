@@ -30,27 +30,30 @@ async function getValueFor(key: string) {
   }
 }
 
-export default function App({ navigation }) {
+export default function App({ navigation }: { navigation: any }) {
   const Stack = createStackNavigator();
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authToken, setToken] = useState("");
-  const handleLogin = (email: String, password: String) => {
+
+  const handleLogin = (
+    email: String,
+    password: String,
+    callBack: (error: string) => void
+  ) => {
     login(email, password)
       .then((response) => {
-        console.log("here is the pass");
         setIsLoggedIn(true);
         save("authToken", response.data);
         setToken(response.data);
+        callBack("");
       })
       .catch((error) => {
-        console.log("error", error);
         switch (error.response.status) {
           case 401:
-            console.log("Invalid password");
+            callBack("Invalid password");
             break;
           case 404:
-            console.log("User not found");
+            callBack("User not found");
             break;
         }
       });

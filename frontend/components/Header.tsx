@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   safe: {
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   title: {
     fontSize: 18,

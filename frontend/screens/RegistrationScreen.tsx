@@ -1,6 +1,17 @@
 import * as React from "react";
-import { View, StyleSheet, Button, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { register } from "../api";
+import { inputValidation, passwordCheck } from "./Action";
+import Button from "../components/Button";
 
 export default function RegistrationScreen({
   navigation,
@@ -12,54 +23,168 @@ export default function RegistrationScreen({
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [signupDisable, setDisable] = React.useState(true);
+  const [editable, setEditable] = React.useState(false);
+
   const handleSignup = () => {
     register(email, password, firstName, lastName)
       .then(function (response) {
-        console.log(response.status);
+        navigation.navigate("Login", { name: "Daniel", message: "hehahha" });
       })
       .catch(function (error) {
-        console.log("failed");
+        setErrorMessage("Internal error. Try again :(");
       });
-    navigation.navigate("Login", { name: "Daniel", message: "hehahha" });
+  };
+
+  const handleInputChange = (val: string, setState: (val: string) => void) => {
+    if (inputValidation(firstName, lastName, email)) {
+      switch (passwordCheck(password, passwordConfirmation)) {
+        case "Passwords match":
+          setDisable(false);
+          break;
+        default:
+          setDisable(true);
+      }
+    } else {
+      setDisable(true);
+    }
+    setState(val);
   };
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="First name"
-        style={styles.input}
-        onChangeText={(val) => {
-          setFirstName(val);
-        }}
-      />
-      <TextInput
-        placeholder="Second name"
-        style={styles.input}
-        onChangeText={(val) => {
-          setLastName(val);
-        }}
-      />
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        onChangeText={(val) => {
-          setEmail(val);
-        }}
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        onChangeText={(val) => {
-          setPassword(val);
-        }}
-      />
-      <TextInput
-        placeholder="Confirm Password"
-        style={styles.input}
-        onChangeText={(val) => {
-          setPasswordConfirmation(val);
-        }}
-      />
-      <Button title="Sign up" onPress={handleSignup} />
+    <View style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View style={styles.inner}>
+          <TextInput
+            placeholder="First name"
+            style={styles.input}
+            onChangeText={(val) => {
+              if (inputValidation(val, lastName, email)) {
+                switch (passwordCheck(password, passwordConfirmation)) {
+                  case "Passwords match":
+                    setErrorMessage("You can register :)");
+                    setDisable(false);
+                    break;
+                  default:
+                    setDisable(true);
+                }
+              } else {
+                setDisable(true);
+              }
+              setFirstName(val);
+            }}
+          />
+          <TextInput
+            placeholder="Last name"
+            style={styles.input}
+            onChangeText={(val) => {
+              if (inputValidation(firstName, val, email)) {
+                switch (passwordCheck(password, passwordConfirmation)) {
+                  case "Passwords match":
+                    setErrorMessage("You can register :)");
+                    setDisable(false);
+                    break;
+                  default:
+                    setDisable(true);
+                }
+              } else {
+                setDisable(true);
+              }
+              setLastName(val);
+            }}
+          />
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            onChangeText={(val) => {
+              if (inputValidation(firstName, lastName, val)) {
+                switch (passwordCheck(password, passwordConfirmation)) {
+                  case "Passwords match":
+                    setErrorMessage("You can now register :)");
+                    setDisable(false);
+                    break;
+                  default:
+                    setDisable(true);
+                }
+              } else {
+                setDisable(true);
+              }
+              setEmail(val);
+            }}
+          />
+          <TextInput
+            secureTextEntry={true}
+            placeholder="Password"
+            style={styles.input}
+            onChangeText={(val) => {
+              console.log("passwords", [
+                val,
+                passwordConfirmation,
+                val === passwordConfirmation,
+              ]);
+              setPassword(val);
+              switch (passwordCheck(val, passwordConfirmation)) {
+                case "Valid Password":
+                  setEditable(true);
+                  setErrorMessage("Valid Password");
+                  break;
+                case "Invalid Password":
+                  setEditable(false);
+                  setErrorMessage("Invalid Password");
+                  break;
+                case "Passwords match":
+                  if (inputValidation(firstName, lastName, email)) {
+                    setEditable(true);
+                    setDisable(false);
+                    setErrorMessage("Passwords match");
+                  } else {
+                    setErrorMessage("Missing inputs :)");
+                  }
+                  break;
+                default:
+                  setEditable(true);
+                  setDisable(true);
+                  setErrorMessage("Passwords don't match");
+                  break;
+              }
+            }}
+          />
+          <TextInput
+            secureTextEntry={true}
+            textContentType="password"
+            placeholder="Confirm Password"
+            style={styles.input}
+            onChangeText={(val) => {
+              setPasswordConfirmation(val);
+              switch (passwordCheck(password, val)) {
+                case "Passwords match":
+                  if (inputValidation(firstName, lastName, email)) {
+                    setDisable(true);
+                  } else {
+                    setErrorMessage("Missing inputs :)");
+                  }
+                  break;
+                default:
+                  setDisable(true);
+                  setErrorMessage("Password don't match");
+                  break;
+              }
+            }}
+            editable={editable}
+          />
+          <Text style={{ color: "red", textAlign: "center" }}>
+            {errorMessage}
+          </Text>
+          <Button
+            disabled={signupDisable}
+            title="Sign up"
+            onPress={handleSignup}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -67,7 +192,6 @@ export default function RegistrationScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
   },
   input: {
@@ -76,5 +200,10 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderBottomWidth: 1,
     padding: 10,
+    alignSelf: "center",
+  },
+  inner: {
+    marginLeft: 10,
+    marginRight: 10,
   },
 });

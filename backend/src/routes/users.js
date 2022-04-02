@@ -61,9 +61,11 @@ router.post("/create", async function (req, res, next) {
     return;
   }
   const hashed = await bcrypt.hash(password, saltRounds);
+  const id = uuid();
   database.query(
-    "INSERT INTO USERS (id, email, password, firstName, lastName) VALUES(?,?,?,?,?);",
-    [uuid(), email, hashed, firstName, lastName],
+    "INSERT INTO USERS (id, email, password, firstName, lastName) VALUES(?,?,?,?,?); \
+    INSERT INTO ONLINE (id, status) VALUES(?, ?)",
+    [id, email, hashed, firstName, lastName, id, false],
     function (error, results) {
       if (error) {
         if (error.code === "ER_DUP_ENTRY") {
@@ -160,6 +162,46 @@ router.get("/getFriends", authenticate, async function (req, res, next) {
         res.sendStatus(500);
       } else {
         res.send(results);
+      }
+    }
+  );
+});
+
+router.get("/isOnline", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  database.query(
+    "SELECT status from ONLINE WHERE id=?;",
+    [userId],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        if (results.length == 0) {
+          res.sendStatus(404);
+          return;
+        }
+        const { status } = results[0];
+        res.send({ online: status == 1 });
+      }
+    }
+  );
+});
+
+router.post("/setOnline", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  const { online } = req.body;
+  const newStatus = JSON.parse(online) ? 1 : 0;
+  console.log(newStatus);
+  database.query(
+    "INSERT INTO ONLINE (id,status) VALUES (?,?) ON DUPLICATE KEY UPDATE status=?;",
+    [userId, newStatus, newStatus],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
       }
     }
   );

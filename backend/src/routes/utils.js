@@ -4,8 +4,8 @@ const { database } = require("../database/db");
 const { v4: uuid } = require("uuid");
 
 const authenticate = (req, res, next) => {
-  const token = req.get("Auth");
-  console.log("Authorization", req.get("Auth"));
+  const token = req.get("authorization");
+  // console.log("Authorization", req.get("Auth"));
   if (!token) {
     res.sendStatus(401);
     return;
