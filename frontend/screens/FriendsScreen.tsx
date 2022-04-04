@@ -8,27 +8,28 @@ import {
   TouchableHighlight,
 } from "react-native";
 import { SearchBar } from "react-native-elements";
-import { SafeAreaView } from "react-native-safe-area-context"
+import { SafeAreaView } from "react-native-safe-area-context";
 import { searchUser, addFriend, getFriends } from "../api";
 
 type user = {
-  id: string,
-  firstName: string,
-  lastName: string,
-  email: string,
-}
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+};
 
 type searchResult = user & {
-  status: number
-}
+  status: number;
+};
 
 export interface FriendScreenI {
-  navigation: any,
-  friends: user[]
+  navigation: any;
+  friends: user[];
 }
 
 export default function FriendScreen(props: FriendScreenI) {
-  const { navigation, friends: initialFriends} = props
+  const { navigation, friends: initialFriends } = props;
+  console.log("data", initialFriends);
   const [search, setSearch] = useState<string>("");
   const [friends, setFriends] = useState<user[]>(initialFriends);
   const [searches, setSearches] = useState<user[]>(initialFriends);
@@ -38,19 +39,21 @@ export default function FriendScreen(props: FriendScreenI) {
    * 2 - User sent request
    * 3 - User recieved request
    */
-  const [friendStatuses, setFriendStatuses] = useState<Map<string, number>>(() => {
-    const map = new Map<string, number>()
-    initialFriends.forEach((element : user) => {
-      map.set(element.id, 0);
-    })
-    return map
-  })
+  const [friendStatuses, setFriendStatuses] = useState<Map<string, number>>(
+    () => {
+      const map = new Map<string, number>();
+      initialFriends.forEach((element: user) => {
+        map.set(element.id, 0);
+      });
+      return map;
+    }
+  );
 
   const handleAddFriend = (data: user) => {
     addFriend(data?.id);
     setFriends([...friends, data]);
     friendStatuses.set(data.id, data);
-    setFriendStatuses(friendStatuses)
+    setFriendStatuses(friendStatuses);
   };
 
   const handleOpenMessage = (
@@ -68,52 +71,44 @@ export default function FriendScreen(props: FriendScreenI) {
   const updateSearch = async (input: string) => {
     setSearch(input);
     if (input.trim() === "") {
-      setSearches(friends)
+      setSearches(friends);
       return;
     }
-    const { data: users } = await searchUser(input)
-    console.log(users)
-    setSearches(users)
-    users.forEach((user: searchResult) => friendStatuses.set(user.id, user.status));
-    setFriendStatuses(friendStatuses)
+    const { data: users } = await searchUser(input);
+    console.log(users);
+    setSearches(users);
+    users.forEach((user: searchResult) =>
+      friendStatuses.set(user.id, user.status)
+    );
+    setFriendStatuses(friendStatuses);
   };
 
   const it = (friend: user) => {
-    const { id, firstName, lastName, email } = friend;
+    console.log("friendInfo", friend);
+    const { id, firstname, lastname, email } = friend;
     return (
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor="#DDDDDD"
-        onPress={() => handleOpenMessage(id, firstName, lastName)}>
+        onPress={() => handleOpenMessage(id, firstname, lastname)}
+      >
         <View style={styles.container}>
           <View style={styles.flexContainer}>
             <View>
-              <Text
-                style={styles.mainText}
-
-              >{`${firstName} ${lastName}`}</Text>
+              <Text style={styles.mainText}>{`${firstname} ${lastname}`}</Text>
               <Text>{email}</Text>
-
-
             </View>
             <View>
-              {
-                friendStatuses.get(id) === 1 && (
-                  <Button
-                    title="Add"
-                    onPress={() => handleAddFriend(friend)}
-                  />
-                )
-              }
+              {friendStatuses.get(id) === 1 && (
+                <Button title="Add" onPress={() => handleAddFriend(friend)} />
+              )}
               {friendStatuses.get(id) === 2 && "Request Sent"}
-              {
-                friendStatuses.get(id) === 3 && (
-                  <Button
-                    title="Accept"
-                    onPress={() => handleAddFriend(friend)}
-                  />
-                )
-              }
+              {friendStatuses.get(id) === 3 && (
+                <Button
+                  title="Accept"
+                  onPress={() => handleAddFriend(friend)}
+                />
+              )}
             </View>
           </View>
         </View>

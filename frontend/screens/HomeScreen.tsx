@@ -11,7 +11,7 @@ import MyBuddies from "./MyBuddies";
 
 const Tab = createBottomTabNavigator();
 
-export default function TabScreen({ handleLogoutCallBack }) {
+export default function TabScreen({ navigation, handleLogoutCallBack }) {
   //retrieve the authToken from the context
   const authToken = useContext(UserContext);
   const [friends, setFriends] = useState([]);
@@ -38,7 +38,12 @@ export default function TabScreen({ handleLogoutCallBack }) {
           tabBarIcon: () => <FontAwesome name="map" size={24} color="black" />,
         }}
       >
-        {(props) => <MyBuddies handleLogoutCallback={handleLogoutCallBack} />}
+        {(props) => (
+          <MyBuddies
+            navigation={navigation}
+            handleLogoutCallback={handleLogoutCallBack}
+          />
+        )}
       </Tab.Screen>
       <Tab.Screen
         name="Friends"

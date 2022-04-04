@@ -58,7 +58,6 @@ export default function MyBuddies({
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log("hahah", status);
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
@@ -66,6 +65,7 @@ export default function MyBuddies({
       //retrieving the user token
       getNearbyFriends(authToken)
         .then((resp) => {
+          console.log("data near by ", resp.data);
           setFriends(resp.data);
         })
         .catch((error) => {
@@ -146,6 +146,7 @@ export default function MyBuddies({
       </View>
       {isEnabledViews ? (
         <MapScreen
+          navigation={navigation}
           userLongitude={longitude}
           userLatitude={latitude}
           retrievedFriends={friends}

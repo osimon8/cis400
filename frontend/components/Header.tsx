@@ -4,19 +4,18 @@ import { Header } from "react-native-elements";
 import { Surface } from "react-native-paper";
 import Button from "./Button";
 
-export default function AppHeader({ ret, header }) {
-  // <SafeAreaProvider>
-  //   <SafeAreaView style={styles.safe}>
-  //     <View style={styles.container}>
-  //       <Button title={"Back"} onPress={ret} />
-  //       <Text style={styles.title}>{header}</Text>
-  //     </View>
-  //   </SafeAreaView>
-  // </SafeAreaProvider>
+export default function AppHeader({ ret, header, handleShareLocation }: {}) {
   return (
     <View style={styles.container}>
-      <Button title={"Back"} onPress={ret} />
-      <Text style={styles.title}>{header}</Text>
+      <View style={styles.safe}>
+        <Button disabled={false} title={"Back"} onPress={ret} />
+        <Text style={styles.title}>{header}</Text>
+        <Button
+          title={"Share Location"}
+          onPress={handleShareLocation}
+          disabled={false}
+        />
+      </View>
     </View>
   );
 }
@@ -30,7 +29,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   safe: {
-    // backgroundColor: "white",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     fontSize: 18,

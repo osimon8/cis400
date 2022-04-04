@@ -35,8 +35,10 @@ export const register = (
 };
 
 export const searchUser = async (input: String) => {
-  const authToken = await getValueFor("authToken")
-  return axios.get(`${baseUrl}users/search?input=${input}`, {headers: { Authorization: `${authToken}` }});
+  const authToken = await getValueFor("authToken");
+  return axios.get(`${baseUrl}users/search?input=${input}`, {
+    headers: { Authorization: `${authToken}` },
+  });
 };
 
 //Handles the friend addition.
@@ -94,6 +96,7 @@ export const sendMessage = (
   friendId: string,
   message: string
 ) => {
+  console.log("messages", message);
   return axios({
     url: `${baseUrl}chat/sendMsg`,
     method: "POST",
@@ -123,5 +126,14 @@ export const setOnlineStatus = (token: string, status: Boolean) => {
     method: "POST",
     headers: { Authorization: `${token}` },
     data: { online: status },
+  });
+};
+
+export const shareLocation = (token: string, friendId: string) => {
+  return axios({
+    url: `${baseUrl}location/share`,
+    method: "POST",
+    headers: { Authorization: `${token}` },
+    data: { friendId: friendId },
   });
 };

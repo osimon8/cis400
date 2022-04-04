@@ -20,6 +20,7 @@ import { sendMessage } from "../api";
 import { UserContext } from "../Context";
 
 export default function MapScreen({
+  navigation,
   userLongitude,
   userLatitude,
   retrievedFriends,
@@ -71,6 +72,7 @@ export default function MapScreen({
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
       let trimmedMessage = message.trim();
+      console.log(trimmedMessage);
       sendMessage(authToken, clickedFriendId, trimmedMessage)
         .then((response) => {
           console.log("testing chating", response);
@@ -109,7 +111,6 @@ export default function MapScreen({
           <Marker coordinate={coordinates} pinColor="#157106" />
           {mapMarkers()}
           <Circle
-            onPress={() => console.log("pressed")}
             center={coordinates}
             radius={3200}
             strokeWidth={1}
@@ -118,7 +119,6 @@ export default function MapScreen({
           />
 
           <Circle
-            onPress={() => console.log("pressed")}
             center={coordinates}
             radius={1609}
             strokeWidth={1}
@@ -127,7 +127,6 @@ export default function MapScreen({
             zIndex={3}
           />
           <Circle
-            onPress={() => console.log("pressed")}
             center={coordinates}
             radius={4800}
             strokeWidth={1}
