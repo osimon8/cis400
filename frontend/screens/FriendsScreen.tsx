@@ -8,10 +8,9 @@ import {
   TouchableHighlight,
 } from "react-native";
 import { SearchBar } from "react-native-elements";
-import { SafeAreaView } from "react-native-safe-area-context"
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { searchUser, addFriend, getFriends } from "../api";
-
 
 export default function FriendScreen({ navigation, friends }) {
   const [search, setSearch] = useState("");
@@ -69,7 +68,7 @@ export default function FriendScreen({ navigation, friends }) {
         activeOpacity={0.6}
         underlayColor="#DDDDDD"
         onPress={() =>
-          handleOpenMessage(data.id, data.firstName, data.lastName)
+          handleOpenMessage(data.id, data.firstname, data.lastname)
         }
       >
         <View style={styles.container}>
@@ -77,7 +76,7 @@ export default function FriendScreen({ navigation, friends }) {
             <View>
               <Text
                 style={styles.mainText}
-              >{`${data.firstName} ${data.lastName}`}</Text>
+              >{`${data.firstname} ${data.lastname}`}</Text>
               <Text>{data.email}</Text>
             </View>
             <View>

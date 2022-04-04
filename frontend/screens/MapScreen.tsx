@@ -94,7 +94,7 @@ export default function MapScreen({
     console.log("hehehe");
   }
   return (
-    <SafeAreaView >
+    <SafeAreaView>
       <View>
         <MapView
           style={styles.map}
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 30,
-    margin: 12,
+
     width: "80%",
     padding: 10,
   },

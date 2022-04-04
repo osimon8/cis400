@@ -44,7 +44,6 @@ export default function LocationScreen({
     setClickedFriendId(id);
     setModalVisible(true);
   };
-  console.log("retreived", { friends, retrievedFriends });
   useEffect(() => {
     setFriends(retrievedFriends);
   }, []);

@@ -15,9 +15,11 @@ export default function TabScreen({ handleLogoutCallBack }) {
   //retrieve the authToken from the context
   const authToken = useContext(UserContext);
   const [friends, setFriends] = useState([]);
+
   useEffect(() => {
     getFriends(authToken)
       .then((response) => {
+        console.log(response.data);
         setFriends(response.data);
       })
       .catch((error) => {
@@ -27,7 +29,7 @@ export default function TabScreen({ handleLogoutCallBack }) {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false
+        headerShown: false,
       }}
     >
       <Tab.Screen
