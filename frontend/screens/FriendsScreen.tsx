@@ -84,15 +84,17 @@ export default function FriendScreen(props: FriendScreenI) {
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor="#DDDDDD"
-        onPress={() => handleOpenMessage(id, firstName, lastName)}
-      >
+        onPress={() => handleOpenMessage(id, firstName, lastName)}>
         <View style={styles.container}>
           <View style={styles.flexContainer}>
             <View>
               <Text
                 style={styles.mainText}
+
               >{`${firstName} ${lastName}`}</Text>
               <Text>{email}</Text>
+
+
             </View>
             <View>
               {
