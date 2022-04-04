@@ -34,8 +34,9 @@ export const register = (
   });
 };
 
-export const searchUser = (input: String) => {
-  return axios.get(`${baseUrl}users/search?input=${input}`);
+export const searchUser = async (input: String) => {
+  const authToken = await getValueFor("authToken")
+  return axios.get(`${baseUrl}users/search?input=${input}`, {headers: { Authorization: `${authToken}` }});
 };
 
 //Handles the friend addition.
@@ -54,7 +55,7 @@ export const addFriend = (id: string) => {
         console.log(response.status);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   });
 };
