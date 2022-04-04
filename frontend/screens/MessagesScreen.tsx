@@ -4,8 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MessagesScreen() {
   return (
-    <SafeAreaView>
-      <Text>Messages</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "green" }}>
+      <View style={{ flex: 1, backgroundColor: "red" }}></View>
     </SafeAreaView>
   );
 }

@@ -60,7 +60,7 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
   useEffect(() => {
     getChatMessages(authToken, route.params.friendId, 0)
       .then((result) => {
-        setMessages(result.data);
+        setMessages(result.data.reverse());
         console.log(result.data);
       })
       .catch((error) => {
@@ -72,7 +72,20 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
       let trimmedMessage = message.trim();
       sendMessage(authToken, route.params.friendId, trimmedMessage)
         .then((response) => {
-          console.log("testing chating", response);
+          setMessages(() => {
+            const newList = [
+              ...messages,
+              {
+                friendId: route.params.friendId,
+                text: message,
+                timestamp: "",
+                userId: "",
+              },
+            ];
+            return newList;
+          });
+
+          setMessage("");
         })
         .catch((err) => {
           console.log(err);
@@ -96,44 +109,42 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
             flex: 1,
           }}
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.inner}>
-              <View
-                style={{
-                  flex: 1,
-                }}
-              >
-                {FlatListBasics()}
+          <View style={styles.inner}>
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              {FlatListBasics()}
+            </View>
+            <View
+              style={{
+                marginTop: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                borderWidth: 1,
+                borderColor: "#DDDDDD",
+                borderRadius: 40,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+            >
+              <View style={{ flex: 2.25 }}>
+                <TextInput
+                  value={message}
+                  style={styles.input}
+                  placeholder="useless placeholder"
+                  onChangeText={(e) => {
+                    setMessage(e);
+                  }}
+                />
               </View>
-              <View
-                style={{
-                  marginTop: 10,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: "#DDDDDD",
-                  borderRadius: 40,
-                  paddingLeft: 15,
-                  paddingRight: 15,
-                }}
-              >
-                <View style={{ flex: 2.25 }}>
-                  <TextInput
-                    value={message}
-                    style={styles.input}
-                    placeholder="useless placeholder"
-                    onChangeText={(e) => {
-                      setMessage(e);
-                    }}
-                  />
-                </View>
 
-                <View style={{ flex: 0.75 }}>
-                  <Button title="send" onPress={handleSendingMessage} />
-                </View>
+              <View style={{ flex: 0.75 }}>
+                <Button title="send" onPress={handleSendingMessage} />
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -1,19 +1,23 @@
 import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context"
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Header } from "react-native-elements";
 import { Surface } from "react-native-paper";
 import Button from "./Button";
 
 export default function AppHeader({ ret, header }) {
+  // <SafeAreaProvider>
+  //   <SafeAreaView style={styles.safe}>
+  //     <View style={styles.container}>
+  //       <Button title={"Back"} onPress={ret} />
+  //       <Text style={styles.title}>{header}</Text>
+  //     </View>
+  //   </SafeAreaView>
+  // </SafeAreaProvider>
   return (
-    <SafeAreaProvider>
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <Button title={"Back"} onPress={ret} />
-        <Text style={styles.title}>{header}</Text>
-      </View>
-    </SafeAreaView>
-    </SafeAreaProvider>
+    <View style={styles.container}>
+      <Button title={"Back"} onPress={ret} />
+      <Text style={styles.title}>{header}</Text>
+    </View>
   );
 }
 

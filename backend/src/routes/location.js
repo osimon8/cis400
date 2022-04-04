@@ -127,7 +127,7 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
   	JOIN USERS as f ON friendId = f.id
     JOIN LOCATION as l1 ON f.id = l1.user_id  
     JOIN LOCATION as l2 ON u.id = l2.user_id
-    WHERE userId = ? AND status=1; 
+    WHERE userId = ? AND status = 1; 
     SELECT userId as id, latitude, longitude FROM SHARING JOIN LOCATION ON userId=user_id WHERE friendId=?;`,
     [userId, userId],
     function (error, results) {

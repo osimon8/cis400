@@ -72,19 +72,23 @@ export default function MyBuddies({
           console.log("error near friends", error.message);
         });
       //Getting the user location
-      Location.getCurrentPositionAsync({}).then((resp) => {
-        var coords = resp["coords"];
-        setLatitude(coords["latitude"]);
-        setLongitude(coords["longitude"]);
-        //setting the user location in the backend
-        setUserLocation(authToken, coords["longitude"], coords["latitude"])
-          .then((results) => {
-            console.log("location saved", results.status);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
+      Location.getCurrentPositionAsync({})
+        .then((resp) => {
+          var coords = resp["coords"];
+          setLatitude(coords["latitude"]);
+          setLongitude(coords["longitude"]);
+          //setting the user location in the backend
+          setUserLocation(authToken, coords["longitude"], coords["latitude"])
+            .then((results) => {
+              console.log("location saved", results.status);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })();
   }, []);
 
