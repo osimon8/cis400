@@ -11,14 +11,7 @@ const cors = require("cors");
 
 const { database } = require("../database/db");
 
-<<<<<<< HEAD
-// import { v4 as uuid } from "uuid";
-const { v4: uuid, validate } = require("uuid");
-const { use } = require("./chat");
-// router.use(express.static("assets"));
-=======
 const { v4: uuid } = require("uuid");
->>>>>>> a8c77f6071da3e9e88f90b7658897625c066463d
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -179,12 +172,7 @@ router.post("/addFriend",
  authenticate, 
 async function (req, res, next) {
   const { userId } = res.locals;
-<<<<<<< HEAD
-  //console.log("userId", userId);
-  const {friendId} = req.body;
-=======
   const { friendId } = req.body;
->>>>>>> a8c77f6071da3e9e88f90b7658897625c066463d
   if (!friendId) {
     res.statusCode = 400;
     res.send("Missing friendId");
