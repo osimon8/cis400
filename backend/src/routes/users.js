@@ -78,6 +78,29 @@ router.get("/getProfile/:userId", async function (req, res, next) {
   );
 });
 
+router.get("/getProfile", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
+  database.query(
+    "SELECT u.id, email, firstName, lastName, status from USERS u JOIN ONLINE o ON u.id=o.id WHERE u.id=?;",
+    [userId],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        if (results.length == 0) {
+          res.status(404);
+          res.send("User not found");
+        } else {
+          const data = results[0];
+          const { status, id, email, firstName, lastName } = data;
+          res.send({ id, email, firstName, lastName, online: status == 1 });
+        }
+      }
+    }
+  );
+});
+
 router.post("/create", async function (req, res, next) {
   const { email, password, firstName, lastName } = req.body;
   if (!email || !password) {
@@ -147,7 +170,6 @@ router.post("/login", async function (req, res, next) {
 
 router.post("/addFriend", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
-  console.log("userId", userId);
   const { friendId } = req.body;
   if (!friendId) {
     res.statusCode = 400;
@@ -217,8 +239,15 @@ router.get("/isOnline", authenticate, async function (req, res, next) {
 router.post("/setOnline", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   const { online } = req.body;
-  const newStatus = JSON.parse(online) ? 1 : 0;
-  console.log(newStatus);
+  let newStatus = 0;
+  try {
+    newStatus = JSON.parse(online) ? 1 : 0;
+  } catch (err) {
+    console.log(err);
+    res.status = 400;
+    res.send(`Can't parse "online" paramater`);
+    return;
+  }
   database.query(
     "INSERT INTO ONLINE (id,status) VALUES (?,?) ON DUPLICATE KEY UPDATE status=?;",
     [userId, newStatus, newStatus],
