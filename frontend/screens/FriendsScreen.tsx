@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Button,
   Text,
@@ -10,7 +10,7 @@ import {
 import { SearchBar } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { searchUser, addFriend, getFriends } from "../api";
-
+import { UserContext } from "../Context";
 type user = {
   id: string;
   firstname: string;
@@ -29,10 +29,10 @@ export interface FriendScreenI {
 
 export default function FriendScreen(props: FriendScreenI) {
   const { navigation, friends: initialFriends } = props;
-  console.log("data", initialFriends);
+  const authToken = useContext(UserContext);
   const [search, setSearch] = useState<string>("");
-  const [friends, setFriends] = useState<user[]>(initialFriends);
-  const [searches, setSearches] = useState<user[]>(initialFriends);
+  const [friends, setFriends] = useState<user[]>([]);
+  const [searches, setSearches] = useState<user[]>([]);
   /**
    * 0 - Not Friends
    * 1 - Friends
@@ -49,6 +49,16 @@ export default function FriendScreen(props: FriendScreenI) {
     }
   );
 
+  useEffect(() => {
+    getFriends(authToken)
+      .then((response) => {
+        console.log(response.data);
+        setFriends(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
   const handleAddFriend = (data: user) => {
     addFriend(data?.id);
     setFriends([...friends, data]);

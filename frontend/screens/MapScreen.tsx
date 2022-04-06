@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { sendMessage } from "../api";
 import { UserContext } from "../Context";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function MapScreen({
   navigation,
@@ -57,13 +58,19 @@ export default function MapScreen({
         console.log(item);
         return (
           <Marker
-            // key={report.id}
             coordinate={{ latitude: lat + nd, longitude: long + ed }}
-            // title={report.location}
-            // description={report.comments}
             pinColor="blue"
             onPress={() => handleOpen(item.id, item.firstName, item.lastName)}
-          />
+          >
+            <View>
+              <Image
+                style={styles.imagePin}
+                source={{
+                  uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
+                }}
+              />
+            </View>
+          </Marker>
         );
       });
       return oneMile;
@@ -254,6 +261,12 @@ const styles = StyleSheet.create({
   imageModal: {
     width: 100,
     height: 100,
+    borderRadius: 50,
+    marginBottom: 5,
+  },
+  imagePin: {
+    width: 40,
+    height: 40,
     borderRadius: 50,
     marginBottom: 5,
   },
