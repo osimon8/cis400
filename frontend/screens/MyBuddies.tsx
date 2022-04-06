@@ -58,7 +58,6 @@ export default function MyBuddies({
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      console.log("hahah", status);
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
@@ -66,25 +65,30 @@ export default function MyBuddies({
       //retrieving the user token
       getNearbyFriends(authToken)
         .then((resp) => {
+          console.log("data near by ", resp.data);
           setFriends(resp.data);
         })
         .catch((error) => {
           console.log("error near friends", error.message);
         });
       //Getting the user location
-      Location.getCurrentPositionAsync({}).then((resp) => {
-        var coords = resp["coords"];
-        setLatitude(coords["latitude"]);
-        setLongitude(coords["longitude"]);
-        //setting the user location in the backend
-        setUserLocation(authToken, coords["longitude"], coords["latitude"])
-          .then((results) => {
-            console.log("location saved", results.status);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
+      Location.getCurrentPositionAsync({})
+        .then((resp) => {
+          var coords = resp["coords"];
+          setLatitude(coords["latitude"]);
+          setLongitude(coords["longitude"]);
+          //setting the user location in the backend
+          setUserLocation(authToken, coords["longitude"], coords["latitude"])
+            .then((results) => {
+              console.log("location saved", results.status);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })();
   }, []);
 
@@ -142,6 +146,7 @@ export default function MyBuddies({
       </View>
       {isEnabledViews ? (
         <MapScreen
+          navigation={navigation}
           userLongitude={longitude}
           userLatitude={latitude}
           retrievedFriends={friends}

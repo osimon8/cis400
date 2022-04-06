@@ -11,7 +11,7 @@ async function getValueFor(key: string) {
   }
 }
 
-const baseUrl = "http://10.103.70.223:3000/";
+const baseUrl = "http://10.103.82.150:3000/";
 //Login
 export const login = (email: String, password: String) => {
   return axios.post(`${baseUrl}users/login`, {
@@ -34,8 +34,11 @@ export const register = (
   });
 };
 
-export const searchUser = (input: String) => {
-  return axios.get(`${baseUrl}users/search?input=${input}`);
+export const searchUser = async (input: String) => {
+  const authToken = await getValueFor("authToken");
+  return axios.get(`${baseUrl}users/search?input=${input}`, {
+    headers: { Authorization: `${authToken}` },
+  });
 };
 
 //Handles the friend addition.
@@ -54,7 +57,7 @@ export const addFriend = (id: string) => {
         console.log(response.status);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   });
 };
@@ -93,6 +96,7 @@ export const sendMessage = (
   friendId: string,
   message: string
 ) => {
+  console.log("messages", message);
   return axios({
     url: `${baseUrl}chat/sendMsg`,
     method: "POST",
@@ -122,5 +126,14 @@ export const setOnlineStatus = (token: string, status: Boolean) => {
     method: "POST",
     headers: { Authorization: `${token}` },
     data: { online: status },
+  });
+};
+
+export const shareLocation = (token: string, friendId: string) => {
+  return axios({
+    url: `${baseUrl}location/share`,
+    method: "POST",
+    headers: { Authorization: `${token}` },
+    data: { friendId: friendId },
   });
 };

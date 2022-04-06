@@ -18,8 +18,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { sendMessage } from "../api";
 import { UserContext } from "../Context";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function MapScreen({
+  navigation,
   userLongitude,
   userLatitude,
   retrievedFriends,
@@ -56,13 +58,19 @@ export default function MapScreen({
         console.log(item);
         return (
           <Marker
-            // key={report.id}
             coordinate={{ latitude: lat + nd, longitude: long + ed }}
-            // title={report.location}
-            // description={report.comments}
             pinColor="blue"
             onPress={() => handleOpen(item.id, item.firstName, item.lastName)}
-          />
+          >
+            <View>
+              <Image
+                style={styles.imagePin}
+                source={{
+                  uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
+                }}
+              />
+            </View>
+          </Marker>
         );
       });
       return oneMile;
@@ -71,6 +79,7 @@ export default function MapScreen({
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
       let trimmedMessage = message.trim();
+      console.log(trimmedMessage);
       sendMessage(authToken, clickedFriendId, trimmedMessage)
         .then((response) => {
           console.log("testing chating", response);
@@ -94,7 +103,7 @@ export default function MapScreen({
     console.log("hehehe");
   }
   return (
-    <SafeAreaView >
+    <SafeAreaView>
       <View>
         <MapView
           style={styles.map}
@@ -109,7 +118,6 @@ export default function MapScreen({
           <Marker coordinate={coordinates} pinColor="#157106" />
           {mapMarkers()}
           <Circle
-            onPress={() => console.log("pressed")}
             center={coordinates}
             radius={3200}
             strokeWidth={1}
@@ -118,7 +126,6 @@ export default function MapScreen({
           />
 
           <Circle
-            onPress={() => console.log("pressed")}
             center={coordinates}
             radius={1609}
             strokeWidth={1}
@@ -127,7 +134,6 @@ export default function MapScreen({
             zIndex={3}
           />
           <Circle
-            onPress={() => console.log("pressed")}
             center={coordinates}
             radius={4800}
             strokeWidth={1}
@@ -258,6 +264,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 5,
   },
+  imagePin: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    marginBottom: 5,
+  },
   modalView: {
     margin: 20,
     backgroundColor: "white",
@@ -302,7 +314,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 30,
-    margin: 12,
+
     width: "80%",
     padding: 10,
   },

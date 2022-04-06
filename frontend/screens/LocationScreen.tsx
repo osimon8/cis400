@@ -18,7 +18,6 @@ import * as Location from "expo-location";
 import { getNearbyFriends, sendMessage, setUserLocation } from "../api";
 import { UserContext } from "../Context";
 import { FriendItemList } from "../components/FriendItemList";
-
 export default function LocationScreen({
   navigation,
   retrievedFriends,
@@ -44,7 +43,6 @@ export default function LocationScreen({
     setClickedFriendId(id);
     setModalVisible(true);
   };
-  console.log("retreived", { friends, retrievedFriends });
   useEffect(() => {
     setFriends(retrievedFriends);
   }, []);

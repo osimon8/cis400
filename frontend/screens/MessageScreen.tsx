@@ -16,13 +16,14 @@ import {
 import AppHeader from "../components/Header";
 import { useRoute } from "@react-navigation/native";
 import { UserContext } from "../Context";
-import { getChatMessages, sendMessage } from "../api";
+import { getChatMessages, sendMessage, shareLocation } from "../api";
 import Bubble from "../components/Bubble";
 
 export default function MessageScreen({ navigation }: { navigation: any }) {
   const authToken = useContext(UserContext);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+
   const route = useRoute();
 
   const goBack = () => {
@@ -31,27 +32,46 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
 
   const FlatListBasics = () => {
     return (
-      <View>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "flex-end",
+        }}
+      >
         <FlatList
-          scrollEnabled
+          style={{}}
           data={messages}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                marginRight: 5,
-                width: "75%",
-                alignSelf:
-                  item.userId === route.params.friendId
-                    ? "flex-start"
-                    : "flex-end",
-              }}
-            >
-              <Bubble
-                text={item.text}
-                border={item.userId === route.params.friendId}
-              />
-            </View>
-          )}
+          renderItem={({ item }) => {
+            if (item.text === "HYPERSECRETSAUCE") {
+              return (
+                <View style={{ alignSelf: "center" }}>
+                  {item.userId === route.params.friendId ? (
+                    <Text>{`${route.params.firstName} ${route.params.lastName} shared their location`}</Text>
+                  ) : (
+                    <Text style={{ color: "#337df4" }}>
+                      You shared your most recent location
+                    </Text>
+                  )}
+                </View>
+              );
+            } else
+              return (
+                <View
+                  style={{
+                    marginRight: 5,
+                    alignSelf:
+                      item.userId === route.params.friendId
+                        ? "flex-start"
+                        : "flex-end",
+                  }}
+                >
+                  <Bubble
+                    text={item.text}
+                    border={item.userId === route.params.friendId}
+                  />
+                </View>
+              );
+          }}
         />
       </View>
     );
@@ -60,80 +80,90 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
   useEffect(() => {
     getChatMessages(authToken, route.params.friendId, 0)
       .then((result) => {
-        setMessages(result.data);
-        console.log(result.data);
+        setMessages(result.data.reverse());
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+  const sendingMessage = (messageToSend: string) => {
+    sendMessage(authToken, route.params.friendId, messageToSend)
+      .then((response) => {
+        setMessages(() => {
+          const newList = [
+            ...messages,
+            {
+              friendId: route.params.friendId,
+              text: message,
+              timestamp: "",
+              userId: "",
+            },
+          ];
+          return newList;
+        });
+
+        setMessage("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
       let trimmedMessage = message.trim();
-      sendMessage(authToken, route.params.friendId, trimmedMessage)
-        .then((response) => {
-          console.log("testing chating", response);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      sendingMessage(trimmedMessage);
     }
+  };
+  // call back function with
+  const handleShareLocation = () => {
+    shareLocation(authToken, route.params.friendId)
+      .then((res) => {
+        sendingMessage("HYPERSECRETSAUCE");
+      })
+      .catch((error) => {
+        console.log("failed to share loc");
+      });
   };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AppHeader
         ret={goBack}
         header={`${route.params.firstName} ${route.params.lastName}`}
+        handleShareLocation={handleShareLocation}
       />
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <View
-          style={{
-            marginBottom: 10,
-            flex: 1,
-          }}
-        >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.inner}>
-              <View
-                style={{
-                  flex: 1,
+        <View style={styles.inner}>
+          {FlatListBasics()}
+          <View
+            style={{
+              marginTop: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#DDDDDD",
+              borderRadius: 40,
+              paddingLeft: 15,
+              paddingRight: 15,
+            }}
+          >
+            <View style={{ flex: 2.25 }}>
+              <TextInput
+                value={message}
+                style={styles.input}
+                placeholder="useless placeholder"
+                onChangeText={(e) => {
+                  setMessage(e);
                 }}
-              >
-                {FlatListBasics()}
-              </View>
-              <View
-                style={{
-                  marginTop: 10,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: "#DDDDDD",
-                  borderRadius: 40,
-                  paddingLeft: 15,
-                  paddingRight: 15,
-                }}
-              >
-                <View style={{ flex: 2.25 }}>
-                  <TextInput
-                    value={message}
-                    style={styles.input}
-                    placeholder="useless placeholder"
-                    onChangeText={(e) => {
-                      setMessage(e);
-                    }}
-                  />
-                </View>
-
-                <View style={{ flex: 0.75 }}>
-                  <Button title="send" onPress={handleSendingMessage} />
-                </View>
-              </View>
+              />
             </View>
-          </TouchableWithoutFeedback>
+
+            <View style={{ flex: 0.75 }}>
+              <Button title="send" onPress={handleSendingMessage} />
+            </View>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

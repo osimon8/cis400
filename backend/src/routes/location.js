@@ -100,6 +100,21 @@ router.post("/share", authenticate, async function (req, res, next) {
   );
 });
 
+router.post("/validateSharings", async function (req, res, next) {
+  database.query(
+    "DELETE FROM SHARING WHERE timestamp < DATE_SUB(NOW(), INTERVAL 30 MINUTE)",
+    [],
+    function (err) {
+      if (err) {
+        console.log(err);
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    }
+  );
+});
+
 router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   const radii = [1, 2, 3]; // miles
@@ -107,12 +122,12 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
     `SELECT friendId as id, f.email, f.firstName, f.lastName, 
 		l1.latitude as lat1, l1.longitude as long1, l2.latitude as lat2, l2.longitude as long2
     FROM FRIENDS 
-    JOIN ONLINE on friendId = id 
+    JOIN ONLINE o on friendId = id 
   	JOIN USERS as u	on userId=u.id 
   	JOIN USERS as f ON friendId = f.id
     JOIN LOCATION as l1 ON f.id = l1.user_id  
     JOIN LOCATION as l2 ON u.id = l2.user_id
-    WHERE userId = ? AND status=1; 
+    WHERE userId = ? AND o.status=1; 
     SELECT userId as id, latitude, longitude FROM SHARING JOIN LOCATION ON userId=user_id WHERE friendId=?;`,
     [userId, userId],
     function (error, results) {

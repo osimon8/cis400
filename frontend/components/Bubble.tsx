@@ -21,12 +21,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#337df4",
     padding: 10,
     margin: 5,
+    alignItems: "center",
     borderRadius: 15,
   },
   containerBorder: {
     backgroundColor: "#98C455",
     padding: 10,
     margin: 5,
+    alignSelf: "center",
     borderRadius: 15,
   },
   text: {

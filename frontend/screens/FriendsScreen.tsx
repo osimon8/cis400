@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Button,
   Text,
@@ -8,31 +8,62 @@ import {
   TouchableHighlight,
 } from "react-native";
 import { SearchBar } from "react-native-elements";
-import { SafeAreaView } from "react-native-safe-area-context"
-
+import { SafeAreaView } from "react-native-safe-area-context";
 import { searchUser, addFriend, getFriends } from "../api";
+import { UserContext } from "../Context";
+type user = {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+};
 
+type searchResult = user & {
+  status: number;
+};
 
-export default function FriendScreen({ navigation, friends }) {
-  const [search, setSearch] = useState("");
-  const [friendsList, setFriendsList] = useState(friends);
-  const [searches, setSearches] = useState(friends);
-  // Map for id and friend. Used for removing and adding new friends
-  const map = new Map();
+export interface FriendScreenI {
+  navigation: any;
+  friends: user[];
+}
 
-  friends.forEach((element) => {
-    map.set(element.id, element);
-  });
-  //adding a new friend
-  const handleAddFriend = (data: object) => {
-    addFriend(data.id);
+export default function FriendScreen(props: FriendScreenI) {
+  const { navigation, friends: initialFriends } = props;
+  const authToken = useContext(UserContext);
+  const [search, setSearch] = useState<string>("");
+  const [friends, setFriends] = useState<user[]>([]);
+  const [searches, setSearches] = useState<user[]>([]);
+  /**
+   * 0 - Not Friends
+   * 1 - Friends
+   * 2 - User sent request
+   * 3 - User recieved request
+   */
+  const [friendStatuses, setFriendStatuses] = useState<Map<string, number>>(
+    () => {
+      const map = new Map<string, number>();
+      initialFriends.forEach((element: user) => {
+        map.set(element.id, 0);
+      });
+      return map;
+    }
+  );
 
-    setFriendsList((friendsList, data) => {
-      let newList = [...friendsList, data];
-      return newList;
-    });
-    // Add the new friend in the map
-    map.set(data.id, data);
+  useEffect(() => {
+    getFriends(authToken)
+      .then((response) => {
+        console.log(response.data);
+        setFriends(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  const handleAddFriend = (data: user) => {
+    addFriend(data?.id);
+    setFriends([...friends, data]);
+    friendStatuses.set(data.id, data);
+    setFriendStatuses(friendStatuses);
   };
 
   const handleOpenMessage = (
@@ -40,55 +71,52 @@ export default function FriendScreen({ navigation, friends }) {
     firstName: string,
     lastName: string
   ) => {
-    console.log("testing", id);
     navigation.navigate("message", {
       friendId: id,
-      firstName: firstName,
-      lastName: lastName,
+      firstName,
+      lastName,
     });
   };
-  const updateSearch = (input: string) => {
-    console.log("input", input === "");
+
+  const updateSearch = async (input: string) => {
     setSearch(input);
-    if (input !== "") {
-      searchUser(input)
-        .then((response) => {
-          setSearches(response.data);
-        })
-        .catch((error) => {
-          console.log("error", error);
-        });
-    } else {
+    if (input.trim() === "") {
       setSearches(friends);
+      return;
     }
+    const { data: users } = await searchUser(input);
+    console.log(users);
+    setSearches(users);
+    users.forEach((user: searchResult) =>
+      friendStatuses.set(user.id, user.status)
+    );
+    setFriendStatuses(friendStatuses);
   };
-  useEffect(() => {}, [friendsList]);
-  const it = (data: Object) => {
+
+  const it = (friend: user) => {
+    console.log("friendInfo", friend);
+    const { id, firstname, lastname, email } = friend;
     return (
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor="#DDDDDD"
-        onPress={() =>
-          handleOpenMessage(data.id, data.firstName, data.lastName)
-        }
+        onPress={() => handleOpenMessage(id, firstname, lastname)}
       >
         <View style={styles.container}>
           <View style={styles.flexContainer}>
             <View>
-              <Text
-                style={styles.mainText}
-              >{`${data.firstName} ${data.lastName}`}</Text>
-              <Text>{data.email}</Text>
+              <Text style={styles.mainText}>{`${firstname} ${lastname}`}</Text>
+              <Text>{email}</Text>
             </View>
             <View>
-              {map.has(data.id) ? (
-                <View />
-              ) : (
+              {friendStatuses.get(id) === 1 && (
+                <Button title="Add" onPress={() => handleAddFriend(friend)} />
+              )}
+              {friendStatuses.get(id) === 2 && "Request Sent"}
+              {friendStatuses.get(id) === 3 && (
                 <Button
-                  title="Add"
-                  onPress={() => {
-                    handleAddFriend(data);
-                  }}
+                  title="Accept"
+                  onPress={() => handleAddFriend(friend)}
                 />
               )}
             </View>
@@ -97,28 +125,23 @@ export default function FriendScreen({ navigation, friends }) {
       </TouchableHighlight>
     );
   };
-  const FlatListBasics = () => {
-    return (
-      <View style={styles.listContainer}>
-        <FlatList
-          data={search === "" ? friendsList : searches}
-          renderItem={({ item }) => it(item)}
-        />
-      </View>
-    );
-  };
 
   return (
     <SafeAreaView>
       <SearchBar
-        placeholder="Search your friends"
+        placeholder="Search/Add Contacts"
         platform="ios"
         lightTheme
         round
         onChangeText={updateSearch}
         value={search}
       />
-      <View style={styles.listContainer}>{FlatListBasics()}</View>
+      <View>
+        <FlatList
+          data={search === "" ? friends : searches}
+          renderItem={({ item }) => it(item)}
+        />
+      </View>
     </SafeAreaView>
   );
 }
