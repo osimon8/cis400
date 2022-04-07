@@ -2,31 +2,25 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 async function getValueFor(key: string) {
-  let result = await SecureStore.getItemAsync(key);
-  if (result) {
-    // alert("🔐 Here's your value 🔐 \n" + result);
-    return result;
-  } else {
-    return null;
-  }
+  return await SecureStore.getItemAsync(key);
 }
 
-const baseUrl = "http://10.103.82.150:3000/";
+export const BASE_URL = "http://192.168.86.31:3000/";
 //Login
 export const login = (email: String, password: String) => {
-  return axios.post(`${baseUrl}users/login`, {
+  return axios.post(`${BASE_URL}users/login`, {
     email: email,
     password: password,
   });
 };
 
 export const register = (
-  email: String,
-  password: String,
-  firstName: String,
-  lastName: String
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
 ) => {
-  return axios.post(`${baseUrl}users/create`, {
+  return axios.post(`${BASE_URL}users/create`, {
     email: email,
     password: password,
     firstName: firstName,
@@ -36,7 +30,7 @@ export const register = (
 
 export const searchUser = async (input: String) => {
   const authToken = await getValueFor("authToken");
-  return axios.get(`${baseUrl}users/search?input=${input}`, {
+  return axios.get(`${BASE_URL}users/search?input=${input}`, {
     headers: { Authorization: `${authToken}` },
   });
 };
@@ -44,18 +38,14 @@ export const searchUser = async (input: String) => {
 //Handles the friend addition.
 export const addFriend = (id: string) => {
   getValueFor("authToken").then((res) => {
-    console.log("response", res);
     axios({
-      url: `${baseUrl}users/addFriend`,
+      url: `${BASE_URL}users/addFriend`,
       method: "POST",
       headers: { Authorization: `${res}` },
       data: {
         friendId: id,
       },
     })
-      .then((response) => {
-        console.log(response.status);
-      })
       .catch((err) => {
         console.error(err);
       });
@@ -64,7 +54,7 @@ export const addFriend = (id: string) => {
 
 export const getFriends = (token: string) => {
   return axios({
-    url: `${baseUrl}users/getFriends`,
+    url: `${BASE_URL}users/getFriends`,
     method: "GET",
     headers: { Authorization: `${token}` },
   });
@@ -76,7 +66,7 @@ export const setUserLocation = (
   latitude: string
 ) => {
   return axios({
-    url: `${baseUrl}location/set`,
+    url: `${BASE_URL}location/set`,
     method: "POST",
     data: { longitude: longitude, latitude: latitude },
     headers: { Authorization: `${token}` },
@@ -85,7 +75,7 @@ export const setUserLocation = (
 
 export const getNearbyFriends = (token: string) => {
   return axios({
-    url: `${baseUrl}location/getFriendsNearby/`,
+    url: `${BASE_URL}location/getFriendsNearby/`,
     method: "GET",
     headers: { Authorization: `${token}` },
   });
@@ -96,9 +86,8 @@ export const sendMessage = (
   friendId: string,
   message: string
 ) => {
-  console.log("messages", message);
   return axios({
-    url: `${baseUrl}chat/sendMsg`,
+    url: `${BASE_URL}chat/sendMsg`,
     method: "POST",
     headers: { Authorization: `${token}` },
     data: {
@@ -114,7 +103,7 @@ export const getChatMessages = (
   limit: Number
 ) => {
   return axios({
-    url: `${baseUrl}chat/getChat?limit=${limit}`,
+    url: `${BASE_URL}chat/getChat?limit=${limit}`,
     method: "GET",
     headers: { Authorization: `${token}`, friendId: friendId },
   });
@@ -122,7 +111,7 @@ export const getChatMessages = (
 
 export const setOnlineStatus = (token: string, status: Boolean) => {
   return axios({
-    url: `${baseUrl}users/setOnline`,
+    url: `${BASE_URL}users/setOnline`,
     method: "POST",
     headers: { Authorization: `${token}` },
     data: { online: status },
@@ -131,7 +120,7 @@ export const setOnlineStatus = (token: string, status: Boolean) => {
 
 export const shareLocation = (token: string, friendId: string) => {
   return axios({
-    url: `${baseUrl}location/share`,
+    url: `${BASE_URL}location/share`,
     method: "POST",
     headers: { Authorization: `${token}` },
     data: { friendId: friendId },

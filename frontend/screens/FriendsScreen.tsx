@@ -28,7 +28,7 @@ export interface FriendScreenI {
 }
 
 export default function FriendScreen(props: FriendScreenI) {
-  const { navigation, friends: initialFriends } = props;
+  const { navigation, friends: initialFriends = [] } = props;
   const authToken = useContext(UserContext);
   const [search, setSearch] = useState<string>("");
   const [friends, setFriends] = useState<user[]>([]);
@@ -52,17 +52,17 @@ export default function FriendScreen(props: FriendScreenI) {
   useEffect(() => {
     getFriends(authToken)
       .then((response) => {
-        console.log(response.data);
         setFriends(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
+
   const handleAddFriend = (data: user) => {
     addFriend(data?.id);
     setFriends([...friends, data]);
-    friendStatuses.set(data.id, data);
+    friendStatuses.set(data.id, 1);
     setFriendStatuses(friendStatuses);
   };
 
@@ -78,23 +78,23 @@ export default function FriendScreen(props: FriendScreenI) {
     });
   };
 
-  const updateSearch = async (input: string) => {
+  const updateSearch = (input: string) => {
     setSearch(input);
     if (input.trim() === "") {
       setSearches(friends);
       return;
     }
-    const { data: users } = await searchUser(input);
-    console.log(users);
-    setSearches(users);
-    users.forEach((user: searchResult) =>
-      friendStatuses.set(user.id, user.status)
-    );
-    setFriendStatuses(friendStatuses);
+    searchUser(input).then(({ data: users }) => {
+      setSearches(users);
+      users.forEach((user: searchResult) =>
+        friendStatuses.set(user.id, user.status)
+      );
+      setFriendStatuses(friendStatuses);
+    })
+    return;
   };
 
   const it = (friend: user) => {
-    console.log("friendInfo", friend);
     const { id, firstname, lastname, email } = friend;
     return (
       <TouchableHighlight

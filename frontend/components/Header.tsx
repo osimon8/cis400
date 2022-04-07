@@ -1,10 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { Header } from "react-native-elements";
-import { Surface } from "react-native-paper";
+import { View, Text, StyleSheet, GestureResponderEvent } from "react-native";
+import { GestureEvent } from "react-native-gesture-handler";
 import Button from "./Button";
 
-export default function AppHeader({ ret, header, handleShareLocation }: {}) {
+export interface IAppHeader {
+  ret: (event: GestureResponderEvent) => void,
+  handleShareLocation: (event: GestureResponderEvent) => void
+  header: string
+}
+
+export default function AppHeader({ ret, header, handleShareLocation }: IAppHeader) {
   return (
     <View style={styles.container}>
       <View style={styles.safe}>

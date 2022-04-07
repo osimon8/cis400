@@ -1,7 +1,12 @@
 import React from "react";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 
-export default function Bubble({ text, border }) {
+export interface IButton {
+  text: string
+  border: string
+}
+
+export default function Bubble({ text, border }: IButton) {
   return (
     <View style={border ? styles.containerBorder : styles.container}>
       <Text
