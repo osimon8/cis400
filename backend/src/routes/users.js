@@ -168,7 +168,9 @@ router.post("/login", async function (req, res, next) {
   );
 });
 
-router.post("/addFriend", authenticate, async function (req, res, next) {
+router.post("/addFriend",
+ authenticate, 
+async function (req, res, next) {
   const { userId } = res.locals;
   const { friendId } = req.body;
   if (!friendId) {
@@ -177,32 +179,115 @@ router.post("/addFriend", authenticate, async function (req, res, next) {
     return;
   }
   database.query(
-    "INSERT INTO FRIENDS (userId, friendId) VALUES(?,?), (?,?);",
-    [userId, friendId, friendId, userId],
+    "SELECT status FROM FRIENDS WHERE userId=? AND friendId=?;",
+    [userId, friendId],
     function (error, results) {
       if (error) {
         console.log(error);
-        if (error.code === "ER_NO_REFERENCED_ROW") {
-          res.status(404);
-          res.send("User with provided ID not found");
-        } else if (error.code === "ER_DUP_ENTRY") {
-          res.status(400);
-          res.send("Users are already friends");
-        } else {
-          res.sendStatus(500);
-        }
+        res.status(404);
+        res.send("error");
       } else {
-        res.sendStatus(201);
+        //NO FRIEND REQUEST SENT BETWEEN EACH OTHER
+        if(results.length == 0) {
+          database.query(
+            "INSERT INTO FRIENDS (userId, friendId, status) VALUES(?,?,?);INSERT INTO FRIENDS (userId, friendId, status) VALUES(?,?,?)",
+            [userId, friendId, 2, friendId, userId, 3],
+            function(errr, ress) {
+              if(errr) {
+                console.log(errr);
+                res.status(404);
+                res.send("error in data");
+              }
+              else {
+                res.status(201);
+                res.send("Friend request sent");
+              }
+            }
+          );
+        } 
+        //ALREADY FRIENDS
+        else if(results[0].status == 1) {
+          res.status(201);
+          res.send("Users are already friends");
+        }
+        //USER SENT REQUEST TO FREIND PREVIOUSLY
+        else if(results[0].status == 2) {
+          res.status(400);
+          res.send("User already sent request previously");
+        }
+        //FRIEND SENT REQUEST TO USER PREVIOUSLY. NOW FRIENDS
+        else if(results[0].status == 3) {
+          database.query(
+            "UPDATE FRIENDS SET status=1 WHERE userId=? and friendId=?;UPDATE FRIENDS SET status=1 WHERE userId=? and friendId=?",
+            [userId, friendId, friendId, userId],
+            function(errr, ress) {
+              if(errr) {
+                res.status(404);
+              }
+              else {
+                res.status(201);
+                res.send("Users are now friends");
+              }
+            }
+          );
+        }
       }
     }
   );
 });
 
+router.post("/deletefriend", 
+authenticate, 
+async function (req, res, next) {
+  //const { userId } = res.locals;
+  //console.log("userId", userId);
+  const {friendId} = req.body;
+  if (!friendId) {
+    res.statusCode = 400;
+    res.send("Missing friendId");
+    return;
+  }
+  database.query(
+    "DELETE FROM FRIENDS WHERE userId=? AND friendId=?;DELETE FROM FRIENDS WHERE userId=? AND friendId=?",
+    [userId, friendId, friendId, userId],
+    function (error, results) {
+      if (error) {
+        console.log(error);
+        res.status(400);
+        res.send("Error deleting Friends");
+        
+      } else {
+        res.status(201);
+        res.send("Friends Deleted");
+      }
+    }
+  );
+});
+
+// router.get("/dummygetFriends", 
+// //authenticate, 
+// async function (req, res, next) {
+//   //const { userId } = res.locals;
+//   //changed the querry to retrieve the firstname, lastname, and email
+//   database.query(
+//     "SELECT * FROM FRIENDS",
+//     function (error, results) {
+//       if (error) {
+//         console.log(error);
+//         res.sendStatus(500);
+//       } else {
+//         res.send(results);
+//       }
+//     }
+//   );
+// });
+
+
 router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   //changed the querry to retrieve the firstname, lastname, and email
   database.query(
-    "SELECT id, email, firstname, lastname from (SELECT friendId FROM FRIENDS WHERE userId=?) a Join USERS ON a.friendId = USERS.id;",
+    "SELECT id, email, firstname, lastname, status from (SELECT friendId, status FROM FRIENDS WHERE userId=?) a Join USERS ON a.friendId = USERS.id;",
     [userId],
     function (error, results) {
       if (error) {
