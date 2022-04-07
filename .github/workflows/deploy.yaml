@@ -29,5 +29,4 @@ jobs:
           kubectl config set-context --current 
       - name: Apply helm charts
         run: |
-          helm upgrade --install prod deploy \
-          --set backend.tag=${{ github.sha }} 
+          helm upgrade --install prod deploy --set backend.tag=${{ github.sha }} 

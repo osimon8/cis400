@@ -5,6 +5,6 @@ application:
 
 backend:
   image: ghcr.io/osimon8/cis400
-  tag: latest
+  tag: 2f8a785c3742143c1601276a1ae6f0d9be36fd5c
   port: 3000
   replicas: 1

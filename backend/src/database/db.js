@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 
 const creds = require("../../secrets/rds");
-var database = mysql.createConnection({...creds, multipleStatements: true});
+var database = mysql.createConnection({...creds, multipleStatements: true, connectTimeout: 0});
 
 database.connect(function (err) {
   if (err) {

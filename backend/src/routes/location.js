@@ -119,7 +119,7 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   const radii = [1, 2, 3]; // miles
   database.query(
-    `SELECT friendId as id, f.email, f.firstName, f.lastName, 
+    `SELECT friendId as id, f.email, f.firstName, f.lastName
 		l1.latitude as lat1, l1.longitude as long1, l2.latitude as lat2, l2.longitude as long2
     FROM FRIENDS 
     JOIN ONLINE o on friendId = id 
@@ -128,7 +128,7 @@ router.get("/getFriendsNearby", authenticate, async function (req, res, next) {
     JOIN LOCATION as l1 ON f.id = l1.user_id  
     JOIN LOCATION as l2 ON u.id = l2.user_id
     WHERE userId = ? AND o.status=1; 
-    SELECT userId as id, latitude, longitude FROM SHARING JOIN LOCATION ON userId=user_id WHERE friendId=?;`,
+    SELECT userId as id, f.email, f.firstName, f.lastName, latitude, longitude FROM SHARING JOIN LOCATION ON userId=user_id WHERE friendId=?;`,
     [userId, userId],
     function (error, results) {
       if (error) {

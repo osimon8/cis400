@@ -1,0 +1,13 @@
+apiVersion: "v1"
+kind: "Node"
+metadata: 
+    name: 10.0.0.25
+    labels: 
+      name: ip-10-0-0-25.ec2.internal
+---
+apiVersion: "v1"
+kind: "Node"
+metadata: 
+    name: 10.0.1.172
+    labels: 
+      name: ip-10-0-1-172.ec2.internal
