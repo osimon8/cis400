@@ -78,13 +78,14 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
   };
 
   useEffect(() => {
-    getChatMessages(authToken, route.params.friendId, 0)
+    const fetchChat = () => getChatMessages(authToken, route.params.friendId, 0)
       .then((result) => {
         setMessages(result.data.reverse());
       })
       .catch((error) => {
         console.error(error);
       });
+    setInterval(fetchChat, 5000);
   }, []);
   const sendingMessage = (messageToSend: string) => {
     sendMessage(authToken, route.params.friendId, messageToSend)

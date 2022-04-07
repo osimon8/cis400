@@ -36,13 +36,14 @@ export default function NearbyScreen({
   };
 
   useEffect(() => {
-    getNearbyFriends(authToken)
+    const fetchFriends = () => getNearbyFriends(authToken)
       .then((response) => {
         setFriends(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
+    setInterval(fetchFriends);
   }, []);
 
   const WrappedFriendItemList = (friends: Array<any>) => (

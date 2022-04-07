@@ -36,13 +36,14 @@ export default function MapScreen({
   const coordinates = { latitude, longitude };
 
   useEffect(() => {
-    getNearbyFriends(authToken)
+    const fetchFriends = () => getNearbyFriends(authToken)
       .then((response) => {
         setFriends(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
+    setInterval(fetchFriends, 5000);
   }, []);
 
   const mapRef = useRef();
@@ -207,13 +208,6 @@ export default function MapScreen({
                   right: 0,
                 }}
               >
-                <Button
-                  title="Close"
-                  onPress={() => {
-                    setMessage("brungus");
-                    setModalVisible(false);
-                  }}
-                ></Button>
               </View>
             </View>
 

@@ -50,13 +50,16 @@ export default function FriendScreen(props: FriendScreenI) {
   );
 
   useEffect(() => {
-    getFriends(authToken)
+    const fetchFriends = () => {
+      getFriends(authToken)
       .then((response) => {
         setFriends(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
+    }
+    setInterval(fetchFriends, 5000);
   }, []);
 
   const handleAddFriend = (data: user) => {
