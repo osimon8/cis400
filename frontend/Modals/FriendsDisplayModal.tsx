@@ -3,10 +3,8 @@ import {
   Text,
   View,
   StyleSheet,
-  Switch,
   Alert,
   Modal,
-  TouchableHighlight,
   TouchableOpacity,
   Image,
   Button,
@@ -14,6 +12,8 @@ import {
 } from "react-native";
 
 export default function FriendModal() {
+  const [modalVisible, setModalVisible] = useState<boolean>(true);
+  
   return (
     <Modal
       animationType="fade"

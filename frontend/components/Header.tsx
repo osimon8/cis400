@@ -1,7 +1,4 @@
 import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { Header } from "react-native-elements";
-import { Surface } from "react-native-paper";
 import Button from "./Button";
 
 export default function AppHeader({ ret, header, handleShareLocation }: {}) {

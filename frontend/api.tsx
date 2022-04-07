@@ -21,10 +21,10 @@ export const login = (email: String, password: String) => {
 };
 
 export const register = (
-  email: String,
-  password: String,
-  firstName: String,
-  lastName: String
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
 ) => {
   return axios.post(`${baseUrl}users/create`, {
     email: email,

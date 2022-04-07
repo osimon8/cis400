@@ -2,15 +2,12 @@ import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
-  StatusBar,
   TextInput,
   Button,
   StyleSheet,
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
   FlatList,
 } from "react-native";
 import AppHeader from "../components/Header";
