@@ -118,13 +118,6 @@ export default function NearbyScreen({
                   right: 0,
                 }}
               >
-                <Button
-                  title="Close"
-                  onPress={() => {
-                    setMessage("");
-                    setModalVisible(!modalVisible);
-                  }}
-                ></Button>
               </View>
             </View>
 
