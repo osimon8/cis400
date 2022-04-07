@@ -231,7 +231,7 @@ router.post("/addFriend", authenticate, async function (req, res, next) {
 router.post("/deleteFriend", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   //console.log("userId", userId);
-  const {friendId } = req.body;
+  const { friendId } = req.body;
   if (!friendId) {
     res.statusCode = 400;
     res.send("Missing friendId");
@@ -252,7 +252,6 @@ router.post("/deleteFriend", authenticate, async function (req, res, next) {
     }
   );
 });
-
 
 router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
@@ -347,8 +346,8 @@ router.post(
   }
 );
 
-router.get("/getPFP", async function (req, res, next) {
-  const { userId } = req.body;
+router.get("/getPFP/:userId", async function (req, res, next) {
+  const { userId } = req.params;
   database.query(
     "SELECT pfp FROM USERS WHERE id=?;",
     [userId],
