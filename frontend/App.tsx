@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { StatusBar } from "expo-status-bar";
 import * as SecureStore from "expo-secure-store";

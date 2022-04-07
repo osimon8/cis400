@@ -20,9 +20,10 @@ export default function TabScreen({ navigation, handleLogoutCallBack }: TabI) {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    getFriends(authToken)
+    const fetchFriends = () => getFriends(authToken)
       .then((response) => setFriends(response.data))
       .catch(console.error);
+    setInterval(fetchFriends, 5000);
   }, []);
 
   return (

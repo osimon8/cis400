@@ -1,20 +1,19 @@
 
 export const passwordCheck = (password: string, passwordConf: string) => {
   passwordConf = passwordConf.trim();
-  switch (
-    password.match(
-      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/
-    )
-  ) {
-    case null:
-      return "Invalid Password";
-    default:
-      if (passwordConf === "") {
-        return "Valid Password";
-      } else if (passwordConf === password.trim()) {
-        return "Passwords match";
-      } else return "Passwords don't match";
+  if (password.trim() === "") {
+    return "Invalid Password";
   }
+  if (password.length < 8) {
+    return "Invalid Password";
+  }
+  if (passwordConf === "") {
+    return "Valid Password";
+  }
+  if (passwordConf === password.trim()) {
+    return "Passwords match";
+  } 
+  return "Passwords don't match";
 };
 
 export const inputValidation = (
