@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import {
   setOnlineStatus,
+  getOnlineStatus,
   setUserLocation,
 } from "../api";
 import { UserContext } from "../Context";
@@ -21,6 +22,17 @@ export default function NearbyScreen({ navigation, isMapView }: { navigation: an
   const toggleSwitchAvailability = () => {
     setIsEnabledAvailability((previousState) => !previousState);
   };
+
+  useEffect(() => {
+    getOnlineStatus(authToken).then((response) => {
+        const {online} = response.data;
+        console.log(online)
+        setIsEnabledAvailability(online);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [])
 
   useEffect(() => {
     setOnlineStatus(authToken, isEnabledAvailability)
@@ -43,6 +55,8 @@ export default function NearbyScreen({ navigation, isMapView }: { navigation: an
       } 
     })()
   }, [])
+
+
 
   return (
     <SafeAreaView style={styles.container}>
