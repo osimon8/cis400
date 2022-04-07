@@ -1,13 +1,16 @@
 import {
-  Button,
   Text,
   View,
   StyleSheet,
-  FlatList,
   TouchableHighlight,
 } from "react-native";
 
-export function FriendItemList({ data, handleOpen }) {
+export interface IFriendList {
+  handleOpen: (id: string, firstName: string, lastName: string) => void
+  item: any
+}
+
+export function FriendItemList({ item: data, handleOpen }: IFriendList) {
   return (
     <TouchableHighlight
       activeOpacity={0.6}
@@ -23,7 +26,6 @@ export function FriendItemList({ data, handleOpen }) {
             <Text>{data.email}</Text>
           </View>
         </View>
-        
       </View>
     </TouchableHighlight>
   );

@@ -28,7 +28,7 @@ export interface FriendScreenI {
 }
 
 export default function FriendScreen(props: FriendScreenI) {
-  const { navigation, friends: initialFriends } = props;
+  const { navigation, friends: initialFriends = [] } = props;
   const authToken = useContext(UserContext);
   const [search, setSearch] = useState<string>("");
   const [friends, setFriends] = useState<user[]>([]);
@@ -52,17 +52,17 @@ export default function FriendScreen(props: FriendScreenI) {
   useEffect(() => {
     getFriends(authToken)
       .then((response) => {
-        console.log(response.data);
         setFriends(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
+
   const handleAddFriend = (data: user) => {
     addFriend(data?.id);
     setFriends([...friends, data]);
-    friendStatuses.set(data.id, data);
+    friendStatuses.set(data.id, 1);
     setFriendStatuses(friendStatuses);
   };
 
@@ -78,7 +78,7 @@ export default function FriendScreen(props: FriendScreenI) {
     });
   };
 
-  const updateSearch = async (input: string) => {
+  const updateSearch = (input: string) => {
     setSearch(input);
     if (input.trim() === "") {
       setSearches(friends);
