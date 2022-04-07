@@ -10,6 +10,7 @@ import {
   Image,
   Button,
   TextInput,
+  ActivityIndicator
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { sendMessage, getNearbyFriends, BASE_URL } from "../api";
@@ -28,6 +29,7 @@ export default function MapScreen({
   latitude,
 }: IMapScreen) {
   const authToken = useContext(UserContext);
+  const [loading, setLoading] = useState(true); 
   const [friends, setFriends] = useState({});
   const [clickedFriend, setClickedFriend] = useState("");
   const [clickedFriendId, setClickedFriendId] = useState("");
@@ -38,6 +40,7 @@ export default function MapScreen({
   useEffect(() => {
     const fetchFriends = () => getNearbyFriends(authToken)
       .then((response) => {
+        console.log(response.data)
         setFriends(response.data);
       })
       .catch((error) => {
@@ -141,13 +144,7 @@ export default function MapScreen({
     }
   };
 
-  return (
-      <TouchableOpacity
-        activeOpacity={1}
-        onPressOut={() => setModalVisible}
-      >
-      <View>
-        <MapView
+const map =         <MapView
           ref={mapRef}
           style={styles.map}
           initialRegion={{
@@ -184,7 +181,15 @@ export default function MapScreen({
             fillColor={"rgba(230,238,255,0.1)"}
             zIndex={1}
           />
-        </MapView>
+        </MapView>;
+
+  return (
+      <TouchableOpacity
+        activeOpacity={1}
+        onPressOut={() => setModalVisible}
+      >
+      <View>
+        {map}
       </View>
 
       <Modal

@@ -38,6 +38,7 @@ export default function NearbyScreen({
   useEffect(() => {
     const fetchFriends = () => getNearbyFriends(authToken)
       .then((response) => {
+        console.log(response.data)
         setFriends(response.data);
       })
       .catch((error) => {

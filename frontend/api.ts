@@ -108,6 +108,14 @@ export const getChatMessages = (
   });
 };
 
+export const getOnlineStatus = (token: string) => {
+  return axios({
+    url: `${BASE_URL}users/isOnline`,
+    method: "GET",
+    headers: { Authorization: `${token}` },
+  });
+};
+
 export const setOnlineStatus = (token: string, status: Boolean) => {
   return axios({
     url: `${BASE_URL}users/setOnline`,
