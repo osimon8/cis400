@@ -34,7 +34,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.KEY }}
           script: |
-            sudo docker run -it --entrypoint /bin/bash
+            sudo docker exec -it server bash
             echo ${{ secrets.DB_CONFIG }} > secrets/rds.js
             echo ${{ secrets.ENCRYPT }} > secrets/encrypt.js
             exit 0
