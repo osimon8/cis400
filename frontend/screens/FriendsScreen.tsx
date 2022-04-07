@@ -61,7 +61,7 @@ export default function FriendScreen(props: FriendScreenI) {
   const handleAddFriend = (data: user) => {
     addFriend(data?.id);
     setFriends([...friends, data]);
-    friendStatuses.set(data.id, data);
+    friendStatuses.set(data.id, 1);
     setFriendStatuses(friendStatuses);
   };
 
@@ -77,18 +77,20 @@ export default function FriendScreen(props: FriendScreenI) {
     });
   };
 
-  const updateSearch = async (input: string) => {
+  const updateSearch = (input: string) => {
     setSearch(input);
     if (input.trim() === "") {
       setSearches(friends);
       return;
     }
-    const { data: users } = await searchUser(input);
-    setSearches(users);
-    users.forEach((user: searchResult) =>
-      friendStatuses.set(user.id, user.status)
-    );
-    setFriendStatuses(friendStatuses);
+    searchUser(input).then(({ data: users }) => {
+      setSearches(users);
+      users.forEach((user: searchResult) =>
+        friendStatuses.set(user.id, user.status)
+      );
+      setFriendStatuses(friendStatuses);
+    })
+    return;
   };
 
   const it = (friend: user) => {

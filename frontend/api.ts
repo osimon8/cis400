@@ -2,13 +2,7 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 async function getValueFor(key: string) {
-  let result = await SecureStore.getItemAsync(key);
-  if (result) {
-    // alert("🔐 Here's your value 🔐 \n" + result);
-    return result;
-  } else {
-    return null;
-  }
+  return await SecureStore.getItemAsync(key);
 }
 
 const baseUrl = "http://10.103.82.150:3000/";

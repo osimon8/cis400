@@ -1,65 +1,57 @@
-// import * as React from 'react';
-import MapView, { Marker, Callout, Circle } from "react-native-maps";
-import React, { useState, useEffect, useContext } from "react";
+import MapView, { Marker, Circle } from "react-native-maps";
+import React, { useState, useContext } from "react";
 import {
   Text,
   View,
   StyleSheet,
-  Switch,
   Alert,
   Modal,
-  TouchableHighlight,
   TouchableOpacity,
   Image,
   Button,
   TextInput,
-  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { sendMessage } from "../api";
 import { UserContext } from "../Context";
-import { AntDesign } from "@expo/vector-icons";
+
+export interface IMapScreen {
+  navigation: any
+  longitude: any
+  latitude: any
+  friends: Array<any>
+}
 
 export default function MapScreen({
   navigation,
-  userLongitude,
-  userLatitude,
-  retrievedFriends,
-}) {
+  longitude,
+  latitude,
+  friends,
+}: IMapScreen) {
   const authToken = useContext(UserContext);
-  const [location, setLocation] = useState(null);
-  const [latitude, setLatitude] = useState(userLatitude);
-  const [friends, setFriends] = useState(retrievedFriends);
-  const [longitude, setLongitude] = useState(userLongitude);
   const [clickedFriend, setClickedFriend] = useState("");
   const [clickedFriendId, setClickedFriendId] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [isEnabled, setIsEnabled] = useState(false);
   const [message, setMessage] = useState("");
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  //retrieves the users location
   const coordinates = { latitude: latitude, longitude: longitude };
-  const coordinatesF = { latitude: 39.96241611314298, longitude: longitude };
   const handleOpen = (id: string, firstName: string, lastName: string) => {
     setClickedFriend(`${firstName} ${lastName}`);
     setClickedFriendId(id);
     setModalVisible(true);
   };
-  useEffect(() => {}, []);
 
   const mapMarkers = () => {
     if (friends) {
-      const oneMile = friends["1"].map((item: Object) => {
-        let lat = latitude;
-        let long = longitude;
-        let nd = (1600 * Math.cos(-90)) / 111111;
-        let ed = (600 * Math.sin(-90)) / Math.cos(lat) / 111111;
+      return friends["1"].map((friend: any) => {
+        const lat = latitude;
+        const long = longitude;
+        const nd = (1600 * Math.cos(-90)) / 111111;
+        const ed = (600 * Math.sin(-90)) / Math.cos(lat) / 111111;
         return (
           <Marker
             coordinate={{ latitude: lat + nd, longitude: long + ed }}
             pinColor="blue"
-            onPress={() => handleOpen(item.id, item.firstName, item.lastName)}
+            onPress={() => handleOpen(friend?.id, friend?.firstName, friend?.lastName)}
           >
             <View>
               <Image
@@ -72,12 +64,12 @@ export default function MapScreen({
           </Marker>
         );
       });
-      return oneMile;
     }
+    return []
   };
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
-      let trimmedMessage = message.trim();
+      const trimmedMessage = message.trim();
       sendMessage(authToken, clickedFriendId, trimmedMessage)
         .catch((err) => {
           console.error(err);
@@ -91,10 +83,7 @@ export default function MapScreen({
       });
     }
   };
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  }
+
   return (
     <SafeAreaView>
       <View>
@@ -110,6 +99,7 @@ export default function MapScreen({
         >
           <Marker coordinate={coordinates} pinColor="#157106" />
           {mapMarkers()}
+
           <Circle
             center={coordinates}
             radius={3200}
@@ -117,7 +107,6 @@ export default function MapScreen({
             strokeColor={"#C86F6F"}
             fillColor={"rgba(230,238,255,0.2)"}
           />
-
           <Circle
             center={coordinates}
             radius={1609}

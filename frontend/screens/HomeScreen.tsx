@@ -11,20 +11,21 @@ import MyBuddies from "./MyBuddies";
 
 const Tab = createBottomTabNavigator();
 
-export default function TabScreen({ navigation, handleLogoutCallBack }) {
-  //retrieve the authToken from the context
+export interface TabI {
+  navigation: any
+  handleLogoutCallBack: () => void
+}
+
+export default function TabScreen({ navigation, handleLogoutCallBack }: TabI) {
   const authToken = useContext(UserContext);
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     getFriends(authToken)
-      .then((response) => {
-        setFriends(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .then((response) => setFriends(response.data))
+      .catch(console.error);
   }, []);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -37,10 +38,9 @@ export default function TabScreen({ navigation, handleLogoutCallBack }) {
           tabBarIcon: () => <FontAwesome name="map" size={24} color="black" />,
         }}
       >
-        {(props) => (
+        {() => (
           <MyBuddies
             navigation={navigation}
-            handleLogoutCallback={handleLogoutCallBack}
           />
         )}
       </Tab.Screen>

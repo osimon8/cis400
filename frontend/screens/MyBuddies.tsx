@@ -95,8 +95,8 @@ export default function MyBuddies({ navigation }: { navigation: any }) {
         ? (
           <MapScreen
             navigation={navigation}
-            userLongitude={longitude}
-            userLatitude={latitude}
+            longitude={longitude}
+            latitude={latitude}
             retrievedFriends={friends}
           />
         )

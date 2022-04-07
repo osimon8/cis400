@@ -7,7 +7,7 @@ import {
   TouchableHighlight,
 } from "react-native";
 
-export function FriendItemList({ data, handleOpen }) {
+export function FriendItemList({ item: data, handleOpen }) {
   return (
     <TouchableHighlight
       activeOpacity={0.6}
