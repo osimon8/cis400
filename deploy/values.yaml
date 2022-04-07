@@ -1,0 +1,9 @@
+application:
+  ingress:
+    path: "/"
+
+backend:
+  image: ghcr.io/osimon8/cis400
+  tag: latest
+  port: 3000
+  replicas: 1
