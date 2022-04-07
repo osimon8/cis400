@@ -40,7 +40,6 @@ export default function MapScreen({
   useEffect(() => {
     const fetchFriends = () => getNearbyFriends(authToken)
       .then((response) => {
-        console.log(response.data)
         setFriends(response.data);
       })
       .catch((error) => {
@@ -119,13 +118,19 @@ export default function MapScreen({
   }, [friends])
 
   useEffect(() => {
-    mapRef.current.animateToRegion({
-      latitude,
-      longitude,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    })
-  }, [latitude, longitude])
+    if (latitude != 0) {
+        setLoading(false);
+        if (mapRef && mapRef.current) {
+            mapRef.current.animateToRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          })
+        }
+    } 
+
+  }, [mapRef, latitude, longitude])
 
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
@@ -144,7 +149,17 @@ export default function MapScreen({
     }
   };
 
-const map =         <MapView
+  return (
+      <TouchableOpacity
+        activeOpacity={1}
+        onPressOut={() => setModalVisible}
+      >
+      <View>
+        {loading ? 
+        <View style={[styles.loadingContainer, styles.loadingHorizontal]}>
+            <ActivityIndicator size="large"/>
+        </View>
+        : <MapView
           ref={mapRef}
           style={styles.map}
           initialRegion={{
@@ -181,15 +196,7 @@ const map =         <MapView
             fillColor={"rgba(230,238,255,0.1)"}
             zIndex={1}
           />
-        </MapView>;
-
-  return (
-      <TouchableOpacity
-        activeOpacity={1}
-        onPressOut={() => setModalVisible}
-      >
-      <View>
-        {map}
+        </MapView>}
       </View>
 
       <Modal
@@ -208,11 +215,18 @@ const map =         <MapView
               }}
             >
               <View
+              
                 style={{
                   position: "absolute",
                   right: 0,
                 }}
               >
+               <Button
+                  title="Close"
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}
+                ></Button>
               </View>
             </View>
 
@@ -222,6 +236,8 @@ const map =         <MapView
                 uri: `${BASE_URL}users/getPFP/${clickedFriendId}`
               }}
             />
+
+
             <Text style={{ fontSize: 28 }}>{clickedFriend}</Text>
             <Text>Quick Texts</Text>
             <View style={{ width: "80%", marginTop: 10 }}>
@@ -291,6 +307,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     zIndex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  loadingHorizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
   },
   imageModal: {
     width: 100,
