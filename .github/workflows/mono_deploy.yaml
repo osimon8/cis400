@@ -26,5 +26,5 @@ jobs:
             sudo docker stop server 
             sudo docker rm server
             sudo docker run -d --publish=80:3000 --name=server ghcr.io/osimon8/cis400:${{ github.sha }}
-            sudo docker exec server echo ${{ secrets.DB_CONFIG }} > secrets/rds.js
-            sudo docker exec server echo ${{ secrets.ENCRYPT }} > secrets/encrypt.js
+            sudo docker exec server echo "${{ secrets.DB_CONFIG }}" > secrets/rds.js
+            sudo docker exec server echo "${{ secrets.ENCRYPT }}" > secrets/encrypt.js
