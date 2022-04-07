@@ -25,7 +25,7 @@ jobs:
 
       - name: Get kubeconfig
         run: |
-          aws eks --region us-east-1 update-kubeconfig --name serendipity --alias serendipity
+          aws eks --region us-east-1 update-kubeconfig --name Serendipity --role-arn arn:aws:iam::350566927584:role/eksClusterRole  --alias serendipity
           kubectl config set-context --current 
       - name: Apply helm charts
         run: |
