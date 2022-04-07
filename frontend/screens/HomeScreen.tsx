@@ -89,7 +89,7 @@ export default function TabScreen({ handleLogoutCallBack }) {
           ),
         }}
       >
-        {(props) => <ProfileScreen {...props} id={id} currentUser={true} />}
+        {(props) => <ProfileScreen {...props} id_here={id} currentUser={true} />}
       </Tab.Screen>
 
 

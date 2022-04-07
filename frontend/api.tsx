@@ -188,7 +188,7 @@ function getBase64(file) {
 export const getPFP = (id: string) => {
   var imageURL = "";
   console.log("KK");
-  return axios.get(`${baseUrl}users/getPFP`);
+  return '${baseUrl}users/getPFP/${id}';
   
   axios({
     url: `${baseUrl}users/getPFP`,

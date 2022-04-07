@@ -106,7 +106,7 @@ export default function App({ navigation }: { navigation: any }) {
               <Stack.Screen name="message" component={MessageScreen} />
               <Stack.Screen name="profile" options={{ title: "friendProfile" }}>
                 {(props) => (
-                  <ProfileScreen {...props} id={0} currentUser={false} />
+                  <ProfileScreen {...props} id_here={0} currentUser={false} />
                 )}
               </Stack.Screen>
             </>

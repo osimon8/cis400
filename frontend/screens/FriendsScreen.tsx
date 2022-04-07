@@ -50,10 +50,14 @@ export default function FriendScreen({ navigation, friends }) {
 
   const friendDetail = (
     id: string,
+    firstName: string,
+    lastName: string
   ) => {
     console.log("testing", id);
     navigation.navigate("profile", {
       id: id,
+      firstName: firstName,
+      lastName: lastName,
     });
   };
 
