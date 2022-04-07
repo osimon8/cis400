@@ -47,6 +47,17 @@ export default function FriendScreen({ navigation, friends }) {
       lastName: lastName,
     });
   };
+
+  const friendDetail = (
+    id: string,
+  ) => {
+    console.log("testing", id);
+    navigation.navigate("profile", {
+      id: id,
+    });
+  };
+
+
   const updateSearch = (input: string) => {
     console.log("input", input === "");
     setSearch(input);
@@ -71,6 +82,7 @@ export default function FriendScreen({ navigation, friends }) {
         onPress={() =>
           handleOpenMessage(data.id, data.firstName, data.lastName)
         }
+        onLongPress={() => friendDetail(data.id)}
       >
         <View style={styles.container}>
           <View style={styles.flexContainer}>

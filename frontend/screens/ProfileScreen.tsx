@@ -20,6 +20,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 //import ImagePicker from "react-native-customized-image-picker";
 //import {launchCamera} from "react-native-customized-image-picker";
 import * as ImagePicker from 'expo-image-picker';
+import { useRoute } from "@react-navigation/native";
+
 
 
 export default function ProfileScreen({ navigation, id, currentUser}) {
@@ -33,9 +35,16 @@ const [imageChanged, setImageChanged] = React.useState(false);
 const [firstName, setFirstName] = React.useState("");
 const [lastName, setLastName] = React.useState("");
 const [email, setEmail] = React.useState("");
+const route = useRoute();
+
 
 useEffect(() => {
   (async () => {
+
+    if (!currentUser ) {
+      id = route.params.id;
+    }
+
     getPFP(id)
       .then((response) => {
         setImage(response.data);
@@ -43,10 +52,11 @@ useEffect(() => {
       .catch((error) => {
         console.log(error);
       });
-
+      
       getProfile(id)
       .then((response) => {
-        setImage(response.data.email);
+        console.log(response.data);
+        setEmail(response.data.email);
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
       })
@@ -129,28 +139,24 @@ function CurrentImage(props) {
   //<Image source={image} style={{ width: 300, height: 300 }}/>
 }
 
-function TextOrEditable(props) {
+function Button1(props) {
   if (currentUser) {
   return (          
-  <View style={styles.container}>
-    <CurrentImage/>
-
-    </View>
-    );
-
-return (
-  <View style={styles.container}>
-    <CurrentImage/>
-    <Text>${firstName}</Text>
-    <Text>${lastName}</Text>
-    <Text>${email}</Text>
-  </View>
-);
-
-
+<Button title="Select New Photo" onPress={pickImage}></Button>);
   }
+return null;
+
 }
-  
+ 
+function Button2(props) {
+  if (currentUser) {
+  return (          
+<Button title="Save" onPress={save}></Button>);
+  }
+return <Button title="Back" onPress={()=>navigation.goBack()}/>;
+
+}
+
 //imageData stored in String64
 
 //data.image;
@@ -162,27 +168,29 @@ return (
 
 <CurrentImage/>
 
-
-<Button title="Select New Photo" onPress={pickImage}></Button>
+<Button1/>
 
 
 <TextInput
 placeholder={firstName}
 style={styles.input}
+editable={currentUser}
 onChangeText={(val) => {setFirstName(val)}} />
 
 
 <TextInput
 placeholder={lastName}
 style={styles.input}
+editable={currentUser}
 onChangeText={(val) => {setLastName(val)}} /> 
 
 <TextInput
 placeholder={email}
 style={styles.input}
+editable={currentUser}
 onChangeText={(val) => {setEmail(val)}} />
 
-<Button title="Save" onPress={save}></Button>
+<Button2/>
 
       
     </View>

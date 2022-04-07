@@ -141,6 +141,7 @@ export const setOnlineStatus = (token: string, status: Boolean) => {
 };
 
 export const getProfile = (id) => {
+  
   return axios.get(`${baseUrl}users/getProfile/${id}`);
 };
 

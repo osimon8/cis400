@@ -9,6 +9,7 @@ import { getID } from "../api"; //TODELETE
 import { UserContext } from "../Context";
 import FriendScreen from "./FriendsScreen";
 import ProfileScreen from "./ProfileScreen";
+import FriendProfileScreen from "./FriendProfileScreen";
 import MessagesScreen from "./MessagesScreen";
 import MyBuddies from "./MyBuddies";
 
@@ -32,7 +33,10 @@ export default function TabScreen({ handleLogoutCallBack }) {
 
       getID()
       .then((response) => {
+        
         setID(response.data);
+        console.log("IDDDDD");
+        console.log(response);
       })
       .catch((error) => {
         console.log(error);

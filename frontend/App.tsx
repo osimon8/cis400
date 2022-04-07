@@ -15,6 +15,7 @@ import TabScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegistrationScreen from "./screens/RegistrationScreen";
 import MessageScreen from "./screens/MessageScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -103,6 +104,11 @@ export default function App({ navigation }: { navigation: any }) {
                 )}
               </Stack.Screen>
               <Stack.Screen name="message" component={MessageScreen} />
+              <Stack.Screen name="profile" options={{ title: "friendProfile" }}>
+                {(props) => (
+                  <ProfileScreen {...props} id={0} currentUser={false} />
+                )}
+              </Stack.Screen>
             </>
           ) : (
             <>
