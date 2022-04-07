@@ -5,9 +5,15 @@ import {
   StyleSheet,
   FlatList,
   TouchableHighlight,
+  GestureResponderEvent,
 } from "react-native";
 
-export function FriendItemList({ item: data, handleOpen }) {
+export interface IFriendList {
+  handleOpen: (id: string, firstName: string, lastName: string) => void
+  item: any
+}
+
+export function FriendItemList({ item: data, handleOpen }: IFriendList) {
   return (
     <TouchableHighlight
       activeOpacity={0.6}

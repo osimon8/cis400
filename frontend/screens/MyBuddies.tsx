@@ -15,7 +15,7 @@ export default function MyBuddies({ navigation }: { navigation: any }) {
   const authToken = useContext(UserContext);
   const [latitude, setLatitude] = useState<null | number>();
   const [longitude, setLongitude] = useState<null | number>();
-  const [friends, setFriends] = useState(null);
+  const [friends, setFriends] = useState([]);
   const [isEnabledAvailability, setIsEnabledAvailability] = useState(true);
   const [isMapView, setIsMapView] = useState(false);
 
@@ -97,7 +97,7 @@ export default function MyBuddies({ navigation }: { navigation: any }) {
             navigation={navigation}
             longitude={longitude}
             latitude={latitude}
-            retrievedFriends={friends}
+            friends={friends}
           />
         )
         : (

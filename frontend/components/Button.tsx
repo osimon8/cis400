@@ -1,7 +1,13 @@
 import React from "react";
-import { Text, StyleSheet, Pressable } from "react-native";
+import { Text, StyleSheet, Pressable, GestureResponderEvent } from "react-native";
 
-export default function Button({ onPress, title, disabled }) {
+export interface IButton {
+  onPress: (event: GestureResponderEvent) => void
+  title: string
+  disabled: boolean
+}
+
+export default function Button({ onPress, title, disabled }: IButton) {
   const styles = StyleSheet.create({
     button: {
       alignItems: "center",

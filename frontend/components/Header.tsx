@@ -1,7 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, GestureResponderEvent } from "react-native";
+import { GestureEvent } from "react-native-gesture-handler";
 import Button from "./Button";
 
-export default function AppHeader({ ret, header, handleShareLocation }: {}) {
+export interface IAppHeader {
+  ret: (event: GestureResponderEvent) => void,
+  handleShareLocation: (event: GestureResponderEvent) => void
+  header: string
+}
+
+export default function AppHeader({ ret, header, handleShareLocation }: IAppHeader) {
   return (
     <View style={styles.container}>
       <View style={styles.safe}>
