@@ -103,7 +103,10 @@ export default function MapScreen({
     console.log("hehehe");
   }
   return (
-    <SafeAreaView>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPressOut={() => setModalVisible}
+      >
       <View>
         <MapView
           style={styles.map}
@@ -248,7 +251,7 @@ export default function MapScreen({
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+      </TouchableOpacity>
   );
 }
 

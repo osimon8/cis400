@@ -11,7 +11,7 @@ async function getValueFor(key: string) {
   }
 }
 
-const baseUrl = "http://10.103.82.150:3000/";
+export const BASE_URL = "http://ec2-18-215-172-111.compute-1.amazonaws.com/";
 //Login
 export const login = (email: String, password: String) => {
   return axios.post(`${baseUrl}users/login`, {
@@ -34,9 +34,8 @@ export const register = (
   });
 };
 
-export const searchUser = async (input: String) => {
-  const authToken = await getValueFor("authToken");
-  return axios.get(`${baseUrl}users/search?input=${input}`, {
+export const searchUser = async (authToken: string, input: String) => {
+  return axios.get(`${BASE_URL}users/search?input=${input}`, {
     headers: { Authorization: `${authToken}` },
   });
 };

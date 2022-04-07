@@ -13,8 +13,8 @@ import { searchUser, addFriend, getFriends } from "../api";
 import { UserContext } from "../Context";
 type user = {
   id: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   email: string;
 };
 
@@ -84,28 +84,29 @@ export default function FriendScreen(props: FriendScreenI) {
       setSearches(friends);
       return;
     }
-    const { data: users } = await searchUser(input);
-    console.log(users);
-    setSearches(users);
-    users.forEach((user: searchResult) =>
-      friendStatuses.set(user.id, user.status)
-    );
-    setFriendStatuses(friendStatuses);
+    searchUser(authToken, input).then(({ data: users }) => {
+      setSearches(users);
+      console.log(users)
+      users.forEach((user: searchResult) => {
+        friendStatuses.set(user.id, user.status)
+      });
+      setFriendStatuses(friendStatuses);
+    })
+    return;
   };
 
   const it = (friend: user) => {
-    console.log("friendInfo", friend);
-    const { id, firstname, lastname, email } = friend;
+    const { id, firstName, lastName, email } = friend;
     return (
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor="#DDDDDD"
-        onPress={() => handleOpenMessage(id, firstname, lastname)}
+        onPress={() => handleOpenMessage(id, firstName, lastName)}
       >
         <View style={styles.container}>
           <View style={styles.flexContainer}>
             <View>
-              <Text style={styles.mainText}>{`${firstname} ${lastname}`}</Text>
+              <Text style={styles.mainText}>{`${firstName} ${lastName}`}</Text>
               <Text>{email}</Text>
             </View>
             <View>
