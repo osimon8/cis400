@@ -43,7 +43,7 @@ export default function FriendScreen(props: FriendScreenI) {
     () => {
       const map = new Map<string, number>();
       initialFriends.forEach((element: user) => {
-        map.set(element.id, 0);
+        map.set(element.id, 1);
       });
       return map;
     }
@@ -113,7 +113,7 @@ export default function FriendScreen(props: FriendScreenI) {
               <Text>{email}</Text>
             </View>
             <View>
-              {friendStatuses.get(id) === 1 && (
+              {friendStatuses.get(id) === 0 && (
                 <Button title="Add" onPress={() => handleAddFriend(friend)} />
               )}
               {friendStatuses.get(id) === 2 && "Request Sent"}
