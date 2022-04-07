@@ -6,8 +6,8 @@ COPY package*.json ./
 RUN npm install
 
 
-RUN --mount=type=secret,id=DB_CONFIG,dst=secrets/rds.js
-RUN --mount=type=secret,id=ENCRYPT,dst=secrets/encrypt.js
+RUN --mount=type=secret,id=DB_CONFIG,target=secrets/rds.js
+RUN --mount=type=secret,id=ENCRYPT,target=secrets/encrypt.js
 
 COPY . .
 EXPOSE 3000
