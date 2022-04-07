@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const secret = require("../../secrets/rds");
+const secret = require("../../secrets/encrypt");
 const { database } = require("../database/db");
 const { v4: uuid } = require("uuid");
 
@@ -10,14 +10,10 @@ const authenticate = (req, res, next) => {
     res.sendStatus(401);
     return;
   }
-  /*
-   * replaced secret with '12345'
-   */
-  jwt.verify(token, "12345", (err, decoded) => {
+  jwt.verify(token, secret, (err, decoded) => {
     if (err) {
-      console.log(err);
-      res.status("Couldn't validate authentication token");
-      res.send(401);
+      res.status = 401;
+      res.send("Couldn't validate authentication token");
       return;
     } else {
       res.locals.userId = decoded.userId;

@@ -1,5 +1,5 @@
 var express = require("express");
-const secret = require("../../secrets/rds");
+const secret = require("../../secrets/encrypt");
 var router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -150,12 +150,8 @@ router.post("/login", async function (req, res, next) {
         } else {
           const user = results[0];
           const valid = await bcrypt.compare(password, user.password);
-          console.log("valid", valid);
           if (valid) {
-            /*
-             * replaced secret with '12345'
-             */
-            const token = jwt.sign({ userId: user.id }, "12345", {
+            const token = jwt.sign({ userId: user.id }, secret, {
               expiresIn: "365d",
             });
             res.send(token);
@@ -168,9 +164,7 @@ router.post("/login", async function (req, res, next) {
   );
 });
 
-router.post("/addFriend",
- authenticate, 
-async function (req, res, next) {
+router.post("/addFriend", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
   const { friendId } = req.body;
   if (!friendId) {
@@ -188,43 +182,41 @@ async function (req, res, next) {
         res.send("error");
       } else {
         //NO FRIEND REQUEST SENT BETWEEN EACH OTHER
-        if(results.length == 0) {
+        if (results.length == 0) {
           database.query(
             "INSERT INTO FRIENDS (userId, friendId, status) VALUES(?,?,?);INSERT INTO FRIENDS (userId, friendId, status) VALUES(?,?,?)",
             [userId, friendId, 2, friendId, userId, 3],
-            function(errr, ress) {
-              if(errr) {
+            function (errr, ress) {
+              if (errr) {
                 console.log(errr);
                 res.status(404);
                 res.send("error in data");
-              }
-              else {
+              } else {
                 res.status(201);
                 res.send("Friend request sent");
               }
             }
           );
-        } 
+        }
         //ALREADY FRIENDS
-        else if(results[0].status == 1) {
+        else if (results[0].status == 1) {
           res.status(201);
           res.send("Users are already friends");
         }
         //USER SENT REQUEST TO FREIND PREVIOUSLY
-        else if(results[0].status == 2) {
+        else if (results[0].status == 2) {
           res.status(400);
           res.send("User already sent request previously");
         }
         //FRIEND SENT REQUEST TO USER PREVIOUSLY. NOW FRIENDS
-        else if(results[0].status == 3) {
+        else if (results[0].status == 3) {
           database.query(
             "UPDATE FRIENDS SET status=1 WHERE userId=? and friendId=?;UPDATE FRIENDS SET status=1 WHERE userId=? and friendId=?",
             [userId, friendId, friendId, userId],
-            function(errr, ress) {
-              if(errr) {
+            function (errr, ress) {
+              if (errr) {
                 res.status(404);
-              }
-              else {
+              } else {
                 res.status(201);
                 res.send("Users are now friends");
               }
@@ -236,12 +228,10 @@ async function (req, res, next) {
   );
 });
 
-router.post("/deletefriend", 
-authenticate, 
-async function (req, res, next) {
+router.post("/deletefriend", authenticate, async function (req, res, next) {
   //const { userId } = res.locals;
   //console.log("userId", userId);
-  const {friendId} = req.body;
+  const { friendId } = req.body;
   if (!friendId) {
     res.statusCode = 400;
     res.send("Missing friendId");
@@ -255,7 +245,6 @@ async function (req, res, next) {
         console.log(error);
         res.status(400);
         res.send("Error deleting Friends");
-        
       } else {
         res.status(201);
         res.send("Friends Deleted");
@@ -263,25 +252,6 @@ async function (req, res, next) {
     }
   );
 });
-
-// router.get("/dummygetFriends", 
-// //authenticate, 
-// async function (req, res, next) {
-//   //const { userId } = res.locals;
-//   //changed the querry to retrieve the firstname, lastname, and email
-//   database.query(
-//     "SELECT * FROM FRIENDS",
-//     function (error, results) {
-//       if (error) {
-//         console.log(error);
-//         res.sendStatus(500);
-//       } else {
-//         res.send(results);
-//       }
-//     }
-//   );
-// });
-
 
 router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
