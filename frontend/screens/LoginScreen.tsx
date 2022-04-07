@@ -1,5 +1,4 @@
-import * as React from "react";
-import AppContext from "../AppContext";
+import React, { useState } from "react";
 
 import {
   Text,
@@ -7,7 +6,6 @@ import {
   StyleSheet,
   TextInput,
   Button,
-  SafeAreaView,
 } from "react-native";
 
 export default function LoginScreen({
@@ -21,25 +19,22 @@ export default function LoginScreen({
     callBack: (error: string) => void
   ) => void;
 }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [errorMessage, setErrorMessage] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSetError = (error: string) => {
-    setErrorMessage(error);
-  };
   const handleLogin = () => {
     if (email === "" || password === "") {
       setErrorMessage("Email and Password can't be empty");
     } else {
-      let trimmedEmail = email.trim();
-      let trimmedPassword = password.trim();
-      handleLoginCallBack(trimmedEmail, trimmedPassword, handleSetError);
+      handleLoginCallBack(email.trim(), password.trim(), setErrorMessage);
     }
   };
+
   const handleRegistration = () => {
     navigation.navigate("Registration");
   };
+
   return (
     <View style={styles.container}>
       <TextInput

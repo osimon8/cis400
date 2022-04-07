@@ -1,91 +1,134 @@
-// import * as React from 'react';
-import MapView, { Marker, Callout, Circle } from "react-native-maps";
-import React, { useState, useEffect, useContext } from "react";
+import MapView, { Marker, Circle } from "react-native-maps";
+import React, { useState, useContext, useMemo, useRef, useEffect } from "react";
 import {
   Text,
   View,
   StyleSheet,
-  Switch,
   Alert,
   Modal,
-  TouchableHighlight,
   TouchableOpacity,
   Image,
   Button,
   TextInput,
-  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { sendMessage } from "../api";
+import { sendMessage, getNearbyFriends, BASE_URL } from "../api";
 import { UserContext } from "../Context";
-import { AntDesign } from "@expo/vector-icons";
+
+export interface IMapScreen {
+  navigation: any
+  longitude: any
+  latitude: any
+  friends: any
+}
 
 export default function MapScreen({
   navigation,
-  userLongitude,
-  userLatitude,
-  retrievedFriends,
-}) {
+  longitude,
+  latitude,
+}: IMapScreen) {
   const authToken = useContext(UserContext);
-  const [location, setLocation] = useState(null);
-  const [latitude, setLatitude] = useState(userLatitude);
-  const [friends, setFriends] = useState(retrievedFriends);
-  const [longitude, setLongitude] = useState(userLongitude);
+  const [friends, setFriends] = useState({});
   const [clickedFriend, setClickedFriend] = useState("");
   const [clickedFriendId, setClickedFriendId] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [isEnabled, setIsEnabled] = useState(false);
   const [message, setMessage] = useState("");
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  //retrieves the users location
-  const coordinates = { latitude: latitude, longitude: longitude };
-  const coordinatesF = { latitude: 39.96241611314298, longitude: longitude };
+  const coordinates = { latitude, longitude };
+
+  useEffect(() => {
+    getNearbyFriends(authToken)
+      .then((response) => {
+        setFriends(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const mapRef = useRef();
+
+  
   const handleOpen = (id: string, firstName: string, lastName: string) => {
     setClickedFriend(`${firstName} ${lastName}`);
     setClickedFriendId(id);
     setModalVisible(true);
   };
-  useEffect(() => {}, []);
 
-  const mapMarkers = () => {
-    if (friends) {
-      const oneMile = friends["1"].map((item: Object) => {
-        let lat = latitude;
-        let long = longitude;
-        let nd = (1600 * Math.cos(-90)) / 111111;
-        let ed = (600 * Math.sin(-90)) / Math.cos(lat) / 111111;
-        console.log(item);
-        return (
-          <Marker
-            coordinate={{ latitude: lat + nd, longitude: long + ed }}
-            pinColor="blue"
-            onPress={() => handleOpen(item.id, item.firstName, item.lastName)}
-          >
-            <View>
-              <Image
-                style={styles.imagePin}
-                source={{
-                  uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
-                }}
-              />
-            </View>
-          </Marker>
-        );
-      });
-      return oneMile;
-    }
-  };
+  const mapMarkers = useMemo(() => {
+    const markers = []
+    const {
+      "1": first = [],
+      shared = []
+    } = friends
+    const seen = {}
+
+    first.forEach((friend: any) => {
+      seen[friend?.id] = friend
+    })
+    
+    first
+    .filter((friend: any) => shared.every((s: any) => s?.id != friend?.id))
+    .forEach((friend: any) => {
+      const nd = (1600 * Math.cos(-90)) / 111111;
+      const ed = (600 * Math.sin(-90)) / Math.cos(latitude) / 111111;
+      console.log(                `${BASE_URL}users/getPFP/${friend?.id}`,
+      )
+      markers.push(
+        <Marker 
+          key={friend?.id}
+          coordinate={{ latitude: latitude + nd, longitude: longitude + ed }}
+          pinColor="#FF0000"
+          onPress={() => handleOpen(friend?.id, friend?.firstName, friend?.lastName)}
+        >
+          <View>
+            <Image
+              style={styles.imagePin}
+              source={{
+                uri: `${BASE_URL}users/getPFP/${friend?.id}`,
+              }}
+            />
+          </View>
+        </Marker>
+      )
+    })
+    shared.forEach(({ id, latitude, longitude }: any) => {
+      const info = seen[id]
+      markers.push(
+        <Marker
+          key={id + "shared"}
+          coordinate={{ latitude, longitude }}
+          pinColor="blue"
+          onPress={() => handleOpen(info?.id, info?.firstName, info?.lastName)}
+        >
+          <View>
+            <Image
+              style={styles.imagePin}
+              source={{
+                uri: `${BASE_URL}users/getPFP/${id}`
+              }}
+            />
+          </View>
+        </Marker>
+      )
+    })
+    return markers
+  }, [friends])
+
+  useEffect(() => {
+    mapRef.current.animateToRegion({
+      latitude,
+      longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    })
+  }, [latitude, longitude])
+
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
-      let trimmedMessage = message.trim();
-      console.log(trimmedMessage);
+      const trimmedMessage = message.trim();
       sendMessage(authToken, clickedFriendId, trimmedMessage)
-        .then((response) => {
-          console.log("testing chating", response);
-        })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
       setModalVisible(!modalVisible);
       setMessage("");
@@ -96,27 +139,27 @@ export default function MapScreen({
       });
     }
   };
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    console.log("hehehe");
-  }
+
   return (
-    <SafeAreaView>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPressOut={() => setModalVisible}
+      >
       <View>
         <MapView
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
-            latitude: latitude,
-            longitude: longitude,
+            latitude,
+            longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
           onPress={() => handleOpen}
         >
           <Marker coordinate={coordinates} pinColor="#157106" />
-          {mapMarkers()}
+          {mapMarkers}
+
           <Circle
             center={coordinates}
             radius={3200}
@@ -124,7 +167,6 @@ export default function MapScreen({
             strokeColor={"#C86F6F"}
             fillColor={"rgba(230,238,255,0.2)"}
           />
-
           <Circle
             center={coordinates}
             radius={1609}
@@ -146,12 +188,9 @@ export default function MapScreen({
 
       <Modal
         animationType="fade"
-        transparent={true}
+        transparent
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -171,9 +210,8 @@ export default function MapScreen({
                 <Button
                   title="Close"
                   onPress={() => {
-                    //clear the message in the modal
-                    setMessage("");
-                    setModalVisible(!modalVisible);
+                    setMessage("brungus");
+                    setModalVisible(false);
                   }}
                 ></Button>
               </View>
@@ -182,7 +220,7 @@ export default function MapScreen({
             <Image
               style={styles.imageModal}
               source={{
-                uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
+                uri: `${BASE_URL}users/getPFP/${clickedFriendId}`
               }}
             />
             <Text style={{ fontSize: 28 }}>{clickedFriend}</Text>
@@ -234,21 +272,18 @@ export default function MapScreen({
                 <TextInput
                   value={message}
                   style={styles.input}
-                  placeholder="useless placeholder"
-                  onChangeText={(e) => {
-                    setMessage(e);
-                  }}
+                  onChangeText={setMessage}
                 />
               </View>
 
               <View style={{ flex: 0.75 }}>
-                <Button title="send" onPress={handleSendingMessage} />
+                <Button title="Send" onPress={handleSendingMessage} />
               </View>
             </View>
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+      </TouchableOpacity>
   );
 }
 

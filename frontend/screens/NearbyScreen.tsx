@@ -3,155 +3,95 @@ import {
   Text,
   View,
   StyleSheet,
-  Switch,
-  Alert,
   Modal,
   TouchableOpacity,
   Image,
   Button,
   TextInput,
-  Pressable,
   FlatList,
-  SectionList,
 } from "react-native";
-import * as Location from "expo-location";
-import { getNearbyFriends, sendMessage, setUserLocation } from "../api";
+import { sendMessage, getNearbyFriends, BASE_URL } from "../api";
 import { UserContext } from "../Context";
 import { FriendItemList } from "../components/FriendItemList";
-export default function LocationScreen({
+
+export interface ILocationScreen {
+  navigation: any
+  friends: any
+}
+
+export default function NearbyScreen({
   navigation,
-  retrievedFriends,
-}: {
-  navigation: any;
-}) {
+}: ILocationScreen) {
   const authToken = useContext(UserContext);
-  const [location, setLocation] = useState(null);
-  const [latitude, setLatitude] = useState(1.9441);
-  const [friends, setFriends] = useState(retrievedFriends);
+  const [friends, setFriends] = useState({});
   const [clickedFriend, setClickedFriend] = useState("");
   const [clickedFriendId, setClickedFriendId] = useState("");
-  const [longitude, setLongitude] = useState(30.0619);
   const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [isEnabled, setIsEnabled] = useState(false);
   const [message, setMessage] = useState("");
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  //retrieves the users location
 
   const handleOpen = (id: string, firstName: string, lastName: string) => {
     setClickedFriend(`${firstName} ${lastName}`);
     setClickedFriendId(id);
     setModalVisible(true);
   };
+
   useEffect(() => {
-    setFriends(retrievedFriends);
+    getNearbyFriends(authToken)
+      .then((response) => {
+        setFriends(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-  }
-  const FlatListBasics = (distance: Number) => {
-    return (
-      <View>
-        <FlatList
-          data={friends ? friends[`${distance}`] : []}
-          renderItem={({ item }) => (
-            <FriendItemList data={item} handleOpen={handleOpen} />
-          )}
-        />
-      </View>
-    );
-  };
+  const WrappedFriendItemList = (friends: Array<any>) => (
+    <View>
+      <FlatList
+        data={friends}
+        renderItem={({ item }) => (
+          <FriendItemList item={item} handleOpen={handleOpen} />
+        )}
+      />
+    </View>
+  );
 
   const handleSendingMessage = () => {
-    if (message.match(/(?!^ +$)^.+$/)) {
-      let trimmedMessage = message.trim();
-      sendMessage(authToken, clickedFriendId, trimmedMessage)
-        .then((response) => {
-          console.log("testing chating", response);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setModalVisible(!modalVisible);
-      setMessage("");
-      navigation.navigate("message", {
-        friendId: clickedFriendId,
-        firstName: clickedFriend.split(" ")[0],
-        lastName: clickedFriend.split(" ")[1],
-      });
-    }
+    if (!message.match(/(?!^ +$)^.+$/)) return;
+    sendMessage(authToken, clickedFriendId, message.trim())
+      .catch(console.error);
+    setModalVisible(!modalVisible);
+    setMessage("");
+    const [firstName, lastName] = clickedFriend.split(" ")
+    navigation.navigate("message", {
+      friendId: clickedFriendId,
+      firstName,
+      lastName
+    });
   };
-
+  const { "1": first = [], "2": second = [], "3": third = [] } = friends ?? {};
   return (
     <View style={styles.container}>
-      {/* <View
-        style={{
-          backgroundColor: "white",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            marginLeft: 10,
-            marginRight: 10,
-          }}
-        >
-          <Text style={{ padding: 2 }}>{"Availability"}</Text>
-          <Switch
-            // style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
-            trackColor={{ false: "#ffffff", true: "#ffffff" }}
-            thumbColor={isEnabled ? "#157106" : "#FF0000"}
-            ios_backgroundColor="#fffff"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ padding: 2 }}>{"Availability"}</Text>
-          <Switch
-            // style={{ position: "absolute", top: 0, right: 0, margin: 5 }}
-            trackColor={{ false: "#ffffff", true: "#ffffff" }}
-            thumbColor={isEnabled ? "#157106" : "#FF0000"}
-            ios_backgroundColor="#fffff"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
-        </View>
-      </View> */}
-
-      {friends && friends["1"].length > 0 ? (
+      {first.length > 0 ? (
         <View>
           <Text style={styles.title}>1 mile away</Text>
-          {FlatListBasics(1)}
+          {WrappedFriendItemList(first)}
         </View>
       ) : (
         <View />
       )}
-      {friends && friends["2"].length > 0 ? (
+      {second.length > 0 ? (
         <View>
-          <Text style={styles.title}>2 mile away</Text>
-          {FlatListBasics(2)}
+          <Text style={styles.title}>2 miles away</Text>
+          {WrappedFriendItemList(second)}
         </View>
       ) : (
         <View />
       )}
-      {friends && friends["3"].length > 0 ? (
+      {third.length > 0 ? (
         <View>
-          <Text style={styles.title}>3 mile away</Text>
-          {FlatListBasics(3)}
+          <Text style={styles.title}>3 miles away</Text>
+          {WrappedFriendItemList(third)}
         </View>
       ) : (
         <View />
@@ -159,12 +99,9 @@ export default function LocationScreen({
 
       <Modal
         animationType="fade"
-        transparent={true}
+        transparent
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -181,21 +118,13 @@ export default function LocationScreen({
                   right: 0,
                 }}
               >
-                <Button
-                  title="Close"
-                  onPress={() => {
-                    //clear the message in the modal
-                    setMessage("");
-                    setModalVisible(!modalVisible);
-                  }}
-                ></Button>
               </View>
             </View>
 
             <Image
               style={styles.imageModal}
               source={{
-                uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
+                uri: `${BASE_URL}users/getPFP/${clickedFriendId}`,
               }}
             />
             <Text style={{ fontSize: 28 }}>{clickedFriend}</Text>
@@ -247,15 +176,12 @@ export default function LocationScreen({
                 <TextInput
                   value={message}
                   style={styles.input}
-                  placeholder="useless placeholder"
-                  onChangeText={(e) => {
-                    setMessage(e);
-                  }}
+                  onChangeText={setMessage}
                 />
               </View>
 
               <View style={{ flex: 0.75 }}>
-                <Button title="send" onPress={handleSendingMessage} />
+                <Button title="Send" onPress={handleSendingMessage} />
               </View>
             </View>
           </View>
