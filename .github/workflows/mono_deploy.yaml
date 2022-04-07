@@ -6,8 +6,7 @@ on:
       - "v*"  
 jobs:
   deploy:
-    name: Deploy
-    if: github.ref == 'refs/heads/main'
+    name: Mono Deploy
     runs-on: ubuntu-latest
     permissions:
       id-token: write
