@@ -228,10 +228,10 @@ router.post("/addFriend", authenticate, async function (req, res, next) {
   );
 });
 
-router.post("/deletefriend", authenticate, async function (req, res, next) {
-  //const { userId } = res.locals;
+router.post("/deleteFriend", authenticate, async function (req, res, next) {
+  const { userId } = res.locals;
   //console.log("userId", userId);
-  const { friendId } = req.body;
+  const {friendId } = req.body;
   if (!friendId) {
     res.statusCode = 400;
     res.send("Missing friendId");
@@ -252,6 +252,7 @@ router.post("/deletefriend", authenticate, async function (req, res, next) {
     }
   );
 });
+
 
 router.get("/getFriends", authenticate, async function (req, res, next) {
   const { userId } = res.locals;
