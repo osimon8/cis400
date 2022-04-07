@@ -52,11 +52,10 @@ export default function FriendScreen(props: FriendScreenI) {
   useEffect(() => {
     getFriends(authToken)
       .then((response) => {
-        console.log(response.data);
         setFriends(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
   const handleAddFriend = (data: user) => {
@@ -85,7 +84,6 @@ export default function FriendScreen(props: FriendScreenI) {
       return;
     }
     const { data: users } = await searchUser(input);
-    console.log(users);
     setSearches(users);
     users.forEach((user: searchResult) =>
       friendStatuses.set(user.id, user.status)
@@ -94,7 +92,6 @@ export default function FriendScreen(props: FriendScreenI) {
   };
 
   const it = (friend: user) => {
-    console.log("friendInfo", friend);
     const { id, firstname, lastname, email } = friend;
     return (
       <TouchableHighlight

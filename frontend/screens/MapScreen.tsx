@@ -55,7 +55,6 @@ export default function MapScreen({
         let long = longitude;
         let nd = (1600 * Math.cos(-90)) / 111111;
         let ed = (600 * Math.sin(-90)) / Math.cos(lat) / 111111;
-        console.log(item);
         return (
           <Marker
             coordinate={{ latitude: lat + nd, longitude: long + ed }}
@@ -79,13 +78,9 @@ export default function MapScreen({
   const handleSendingMessage = () => {
     if (message.match(/(?!^ +$)^.+$/)) {
       let trimmedMessage = message.trim();
-      console.log(trimmedMessage);
       sendMessage(authToken, clickedFriendId, trimmedMessage)
-        .then((response) => {
-          console.log("testing chating", response);
-        })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
       setModalVisible(!modalVisible);
       setMessage("");
@@ -99,8 +94,6 @@ export default function MapScreen({
   let text = "Waiting..";
   if (errorMsg) {
     text = errorMsg;
-  } else if (location) {
-    console.log("hehehe");
   }
   return (
     <SafeAreaView>

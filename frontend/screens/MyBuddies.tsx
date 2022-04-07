@@ -4,99 +4,46 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import {
   getNearbyFriends,
-  sendMessage,
   setOnlineStatus,
   setUserLocation,
 } from "../api";
 import { UserContext } from "../Context";
-import { FriendItemList } from "../components/FriendItemList";
 import LocationScreen from "./LocationScreen";
 import MapScreen from "./MapScreen";
 
-export default function MyBuddies({
-  navigation,
-  handleLogoutCallback,
-}: {
-  navigation: any;
-  handleLogoutCallBack: (
-    email: String,
-    pass: String,
-    cl: (err: string) => void
-  ) => void;
-}) {
+export default function MyBuddies({ navigation }: { navigation: any }) {
   const authToken = useContext(UserContext);
-  const [location, setLocation] = useState(null);
-  const [latitude, setLatitude] = useState(1.9441);
+  const [latitude, setLatitude] = useState<null | number>();
+  const [longitude, setLongitude] = useState<null | number>();
   const [friends, setFriends] = useState(null);
-  const [clickedFriend, setClickedFriend] = useState("");
-  const [clickedFriendId, setClickedFriendId] = useState("");
-  const [longitude, setLongitude] = useState(30.0619);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isEnabledAvailability, setIsEnabledAvailability] = useState(true);
-  const [isEnabledViews, setIsEnabledViews] = useState(false);
-  const [message, setMessage] = useState("");
+  const [isMapView, setIsMapView] = useState(false);
+
   const toggleSwitchAvailability = () => {
     setOnlineStatus(authToken, !isEnabledAvailability)
-      .then(() => {
-        console.log("success setting status");
-        setIsEnabledAvailability((previousState) => !previousState);
-      })
-      .catch((error) => {
-        console.log("failed to set status", error);
-      });
+    setIsEnabledAvailability((previousState) => !previousState);
   };
-  const toggleSwitchViews = () =>
-    setIsEnabledViews((previousState) => !previousState);
-  //retrieves the users location
+  const toggleSwitchViews = () => setIsMapView((previousState) => !previousState);
 
-  const handleOpen = (id: string, firstName: string, lastName: string) => {
-    setClickedFriend(`${firstName} ${lastName}`);
-    setClickedFriendId(id);
-    setModalVisible(true);
-  };
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-      //retrieving the user token
-      getNearbyFriends(authToken)
-        .then((resp) => {
-          console.log("data near by ", resp.data);
-          setFriends(resp.data);
-        })
-        .catch((error) => {
-          console.log("error near friends", error.message);
-        });
-      //Getting the user location
-      Location.getCurrentPositionAsync({})
-        .then((resp) => {
-          var coords = resp["coords"];
-          setLatitude(coords["latitude"]);
-          setLongitude(coords["longitude"]);
-          //setting the user location in the backend
-          setUserLocation(authToken, coords["longitude"], coords["latitude"])
-            .then((results) => {
-              console.log("location saved", results.status);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    })();
-  }, []);
-
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-  }
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          return;
+        }
+        const { coords } = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = coords;
+        setLatitude(latitude);
+        setLongitude(longitude);
+        await setUserLocation(authToken, String(latitude), String(longitude));
+        const { data: friends } = await getNearbyFriends(authToken);
+        setFriends(friends);
+      } catch (error) {
+        console.error(error)
+      } 
+    })()
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -119,10 +66,10 @@ export default function MyBuddies({
           <Text style={{ padding: 2 }}>{"Views"}</Text>
           <Switch
             trackColor={{ false: "#ffffff", true: "#ffffff" }}
-            thumbColor={isEnabledViews ? "#157106" : "#FF0000"}
+            thumbColor={isMapView ? "#157106" : "#FF0000"}
             ios_backgroundColor="#fffff"
             onValueChange={toggleSwitchViews}
-            value={isEnabledViews}
+            value={isMapView}
           />
         </View>
         <View
@@ -134,7 +81,7 @@ export default function MyBuddies({
             marginRight: 10,
           }}
         >
-          <Text style={{ padding: 2 }}>{"Availability"}</Text>
+          <Text style={{ padding: 2 }}>Availability</Text>
           <Switch
             trackColor={{ false: "#ffffff", true: "#ffffff" }}
             thumbColor={isEnabledAvailability ? "#157106" : "#FF0000"}
@@ -144,16 +91,22 @@ export default function MyBuddies({
           />
         </View>
       </View>
-      {isEnabledViews ? (
-        <MapScreen
-          navigation={navigation}
-          userLongitude={longitude}
-          userLatitude={latitude}
-          retrievedFriends={friends}
-        />
-      ) : (
-        <LocationScreen navigation={navigation} retrievedFriends={friends} />
-      )}
+      {isMapView
+        ? (
+          <MapScreen
+            navigation={navigation}
+            userLongitude={longitude}
+            userLatitude={latitude}
+            retrievedFriends={friends}
+          />
+        )
+        : (
+          <LocationScreen
+            navigation={navigation}
+            retrievedFriends={friends}
+          />
+        )
+      }
     </SafeAreaView>
   );
 }

@@ -44,7 +44,6 @@ export const searchUser = async (input: String) => {
 //Handles the friend addition.
 export const addFriend = (id: string) => {
   getValueFor("authToken").then((res) => {
-    console.log("response", res);
     axios({
       url: `${baseUrl}users/addFriend`,
       method: "POST",
@@ -53,9 +52,6 @@ export const addFriend = (id: string) => {
         friendId: id,
       },
     })
-      .then((response) => {
-        console.log(response.status);
-      })
       .catch((err) => {
         console.error(err);
       });
@@ -96,7 +92,6 @@ export const sendMessage = (
   friendId: string,
   message: string
 ) => {
-  console.log("messages", message);
   return axios({
     url: `${baseUrl}chat/sendMsg`,
     method: "POST",

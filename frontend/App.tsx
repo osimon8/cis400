@@ -46,9 +46,7 @@ export default function App({ navigation }: { navigation: any }) {
     login(email, password)
       .then((response) => {
         setIsLoggedIn(true);
-        save("authToken", response.data);
         setToken(response.data);
-        console.log("userINfor", response.data);
         callBack("");
       })
       .catch((error) => {
@@ -69,11 +67,8 @@ export default function App({ navigation }: { navigation: any }) {
   const handleLogout = () => {
     setIsLoggedIn(false);
     SecureStore.deleteItemAsync("authToken")
-      .then((res) => {
-        console.log("successfull", res);
-      })
       .catch((error) => {
-        console.log("failed", error);
+        console.error("failed", error);
       });
   };
   const handleRegistration = () => {

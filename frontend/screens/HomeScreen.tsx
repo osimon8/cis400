@@ -19,11 +19,10 @@ export default function TabScreen({ navigation, handleLogoutCallBack }) {
   useEffect(() => {
     getFriends(authToken)
       .then((response) => {
-        console.log(response.data);
         setFriends(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
   return (

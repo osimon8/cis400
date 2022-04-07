@@ -80,7 +80,7 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
         setMessages(result.data.reverse());
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
   const sendingMessage = (messageToSend: string) => {
@@ -102,7 +102,7 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
         setMessage("");
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
   const handleSendingMessage = () => {
@@ -118,7 +118,7 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
         sendingMessage("HYPERSECRETSAUCE");
       })
       .catch((error) => {
-        console.log("failed to share loc");
+        console.error(error, "failed to share loc");
       });
   };
   return (

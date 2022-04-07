@@ -69,11 +69,8 @@ export default function LocationScreen({
     if (message.match(/(?!^ +$)^.+$/)) {
       let trimmedMessage = message.trim();
       sendMessage(authToken, clickedFriendId, trimmedMessage)
-        .then((response) => {
-          console.log("testing chating", response);
-        })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
       setModalVisible(!modalVisible);
       setMessage("");
