@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TextInput,
   Text,
-  KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { register } from "../api";
@@ -67,7 +66,7 @@ export default function RegistrationScreen(props : IRegistrationScreen) {
 
   return (
     <View style={{ flex: 1 }}>
-      <KeyboardAvoidingView
+      <View
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
@@ -111,7 +110,7 @@ export default function RegistrationScreen(props : IRegistrationScreen) {
             onPress={handleSignup}
           />
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </View>
   );
 }

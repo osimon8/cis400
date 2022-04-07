@@ -10,21 +10,20 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import { sendMessage } from "../api";
+import { sendMessage, getNearbyFriends, BASE_URL } from "../api";
 import { UserContext } from "../Context";
 import { FriendItemList } from "../components/FriendItemList";
 
-export interface LocationScreenI {
+export interface ILocationScreen {
   navigation: any
-  retrievedFriends: Array<any>
+  friends: any
 }
 
-export default function LocationScreen({
+export default function NearbyScreen({
   navigation,
-  retrievedFriends,
-}: LocationScreenI) {
+}: ILocationScreen) {
   const authToken = useContext(UserContext);
-  const [friends, setFriends] = useState(retrievedFriends);
+  const [friends, setFriends] = useState({});
   const [clickedFriend, setClickedFriend] = useState("");
   const [clickedFriendId, setClickedFriendId] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -35,8 +34,15 @@ export default function LocationScreen({
     setClickedFriendId(id);
     setModalVisible(true);
   };
+
   useEffect(() => {
-    setFriends(retrievedFriends);
+    getNearbyFriends(authToken)
+      .then((response) => {
+        setFriends(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const WrappedFriendItemList = (friends: Array<any>) => (
@@ -63,7 +69,6 @@ export default function LocationScreen({
       lastName
     });
   };
-
   const { "1": first = [], "2": second = [], "3": third = [] } = friends ?? {};
   return (
     <View style={styles.container}>
@@ -96,7 +101,7 @@ export default function LocationScreen({
         animationType="fade"
         transparent
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(!modalVisible)}
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -126,7 +131,7 @@ export default function LocationScreen({
             <Image
               style={styles.imageModal}
               source={{
-                uri: "https://images-na.ssl-images-amazon.com/images/I/81nKBuQzyjL.jpg",
+                uri: `${BASE_URL}users/getPFP/${clickedFriendId}`,
               }}
             />
             <Text style={{ fontSize: 28 }}>{clickedFriend}</Text>

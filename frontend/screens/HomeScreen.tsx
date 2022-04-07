@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FontAwesome5, FontAwesome, Entypo } from "@expo/vector-icons";
-
+import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { getFriends } from "../api";
 import { UserContext } from "../Context";
 import FriendScreen from "./FriendsScreen";
-import MessagesScreen from "./MessagesScreen";
-import MyBuddies from "./MyBuddies";
+import FriendsLogic from "../components/FriendsLogic";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -39,7 +38,23 @@ export default function TabScreen({ navigation, handleLogoutCallBack }: TabI) {
         }}
       >
         {() => (
-          <MyBuddies
+          <FriendsLogic
+            key="map view"
+            isMapView
+            navigation={navigation}
+          />
+        )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Nearby"
+        options={{
+          tabBarIcon: () => <FontAwesome name="map-marker" size={24} color="black" />,
+        }}
+      >
+        {() => (
+          <FriendsLogic
+            key="friends view"
+            isMapView={false}
             navigation={navigation}
           />
         )}
@@ -54,13 +69,6 @@ export default function TabScreen({ navigation, handleLogoutCallBack }: TabI) {
       >
         {(props) => <FriendScreen {...props} friends={friends} />}
       </Tab.Screen>
-      <Tab.Screen
-        name="Messages"
-        component={MessagesScreen}
-        options={{
-          tabBarIcon: () => <Entypo name="message" size={24} color="black" />,
-        }}
-      />
     </Tab.Navigator>
   );
 }

@@ -51,11 +51,6 @@ export default function App() {
       .catch(console.error);
   };
 
-  useEffect(() => {
-    SecureStore.getItemAsync("authToken").then((response) => {
-      setToken(response ?? "");
-    });
-  }, []);
 
   return (
     <SafeAreaProvider>

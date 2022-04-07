@@ -1,11 +1,8 @@
 import {
-  Button,
   Text,
   View,
   StyleSheet,
-  FlatList,
   TouchableHighlight,
-  GestureResponderEvent,
 } from "react-native";
 
 export interface IFriendList {
@@ -29,7 +26,6 @@ export function FriendItemList({ item: data, handleOpen }: IFriendList) {
             <Text>{data.email}</Text>
           </View>
         </View>
-        
       </View>
     </TouchableHighlight>
   );

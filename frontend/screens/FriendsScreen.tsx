@@ -28,7 +28,7 @@ export interface FriendScreenI {
 }
 
 export default function FriendScreen(props: FriendScreenI) {
-  const { navigation, friends: initialFriends } = props;
+  const { navigation, friends: initialFriends = [] } = props;
   const authToken = useContext(UserContext);
   const [search, setSearch] = useState<string>("");
   const [friends, setFriends] = useState<user[]>([]);
@@ -58,6 +58,7 @@ export default function FriendScreen(props: FriendScreenI) {
         console.error(error);
       });
   }, []);
+
   const handleAddFriend = (data: user) => {
     addFriend(data?.id);
     setFriends([...friends, data]);

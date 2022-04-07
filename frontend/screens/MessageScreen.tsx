@@ -1,3 +1,5 @@
+// TODO: Refactor this ENTIRE file.
+
 import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
@@ -5,11 +7,11 @@ import {
   TextInput,
   Button,
   StyleSheet,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   FlatList,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import AppHeader from "../components/Header";
 import { useRoute } from "@react-navigation/native";
 import { UserContext } from "../Context";
@@ -39,6 +41,7 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
           style={{}}
           data={messages}
           renderItem={({ item }) => {
+            // TODO: this is cringe and should be changed
             if (item.text === "HYPERSECRETSAUCE") {
               return (
                 <View style={{ alignSelf: "center" }}>
@@ -150,7 +153,6 @@ export default function MessageScreen({ navigation }: { navigation: any }) {
               <TextInput
                 value={message}
                 style={styles.input}
-                placeholder="useless placeholder"
                 onChangeText={(e) => {
                   setMessage(e);
                 }}
