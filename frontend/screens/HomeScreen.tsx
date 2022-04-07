@@ -4,8 +4,11 @@ import { FontAwesome5, FontAwesome, Entypo } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { getFriends } from "../api";
+import { getID } from "../api"; //TODELETE
+
 import { UserContext } from "../Context";
 import FriendScreen from "./FriendsScreen";
+import ProfileScreen from "./ProfileScreen";
 import MessagesScreen from "./MessagesScreen";
 import MyBuddies from "./MyBuddies";
 
@@ -15,6 +18,9 @@ export default function TabScreen({ handleLogoutCallBack }) {
   //retrieve the authToken from the context
   const authToken = useContext(UserContext);
   const [friends, setFriends] = useState([]);
+
+  const [id, setID] = useState(null); //TODELETE
+
   useEffect(() => {
     getFriends(authToken)
       .then((response) => {
@@ -23,7 +29,19 @@ export default function TabScreen({ handleLogoutCallBack }) {
       .catch((error) => {
         console.log(error);
       });
+
+      getID()
+      .then((response) => {
+        setID(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
   }, []);
+
+
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -48,6 +66,9 @@ export default function TabScreen({ handleLogoutCallBack }) {
       >
         {(props) => <FriendScreen {...props} friends={friends} />}
       </Tab.Screen>
+
+
+
       <Tab.Screen
         name="Messages"
         component={MessagesScreen}
@@ -55,6 +76,20 @@ export default function TabScreen({ handleLogoutCallBack }) {
           tabBarIcon: () => <Entypo name="message" size={24} color="black" />,
         }}
       />
+
+<Tab.Screen
+        name="Me"
+        options={{
+          tabBarIcon: () => (
+            <FontAwesome5 name="user-friends" size={24} color="black" />
+          ),
+        }}
+      >
+        {(props) => <ProfileScreen {...props} id={id} currentUser={true} />}
+      </Tab.Screen>
+
+
+
     </Tab.Navigator>
   );
 }

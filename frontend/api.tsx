@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
 async function getValueFor(key: string) {
@@ -11,7 +12,21 @@ async function getValueFor(key: string) {
   }
 }
 
-const baseUrl = "http://10.103.70.223:3000/";
+function DataURIToBlob(dataURI: string) {
+  const splitDataURI = dataURI.split(',')
+  const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
+  const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
+
+  const ia = new Uint8Array(byteString.length)
+  for (let i = 0; i < byteString.length; i++)
+      ia[i] = byteString.charCodeAt(i)
+
+  return new Blob([ia], { type: mimeString })
+}
+
+var baseUrl = "http://10.103.70.223:3000/";
+baseUrl = "http://192.168.0.2:3000/" //TODELETE
+
 //Login
 export const login = (email: String, password: String) => {
   return axios.post(`${baseUrl}users/login`, {
@@ -124,3 +139,74 @@ export const setOnlineStatus = (token: string, status: Boolean) => {
     data: { online: status },
   });
 };
+
+export const getProfile = (id) => {
+  return axios.get(`${baseUrl}users/getProfile/${id}`);
+};
+
+const createFormData = (photo, body) => {
+  const data = new FormData();
+
+  data.append('photo', {
+    name: photo.fileName,
+    type: photo.type,
+    uri:
+      Platform.OS === 'android' ? photo.uri : 
+  photo.uri.replace('file://', ''),
+  });
+
+  Object.keys(body).forEach((key) => {
+    data.append(key, body[key]);
+  });
+
+  return data;
+};
+
+export const setPFP = (token, img) => {
+  var imgBase64 = 'data:image/png;base64,'+img;
+
+  const file = DataURIToBlob(imgBase64)
+  const formData = new FormData();
+  formData.append('file', file, 'image.jpg')
+
+  return axios({
+    url: `${baseUrl}users/uploadPFP`,
+    method: "POST",
+    headers: { Authorization: `${token}`, 'Content-Type': 'multipart/form-data' },
+    
+    data: formData,
+  });
+};
+
+function getBase64(file) {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  return reader.result;
+}
+
+export const getPFP = (id: string) => {
+  var imageURL = "";
+  console.log("KK");
+  return axios.get(`${baseUrl}users/getPFP`);
+  
+  axios({
+    url: `${baseUrl}users/getPFP`,
+    method: "GET",
+    data: {userId: id},
+  })
+  .then(res => {
+    //var file = new File(res.data, { type: 'image/png' });
+    //imageURL = URL.createObjectURL(file);
+    console.log("LOK");
+    console.log(res.data);
+    imageURL = getBase64(res.data);
+    console.log(imageURL);
+  return imageURL;
+});};
+
+export const getID = () => {
+  return axios.get(`${baseUrl}users/toDelete`); //TODELETE
+};
+
+
+

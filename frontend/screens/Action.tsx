@@ -1,5 +1,6 @@
 export const passwordCheck = (password: string, passwordConf: string) => {
   console.log("Passwords check", passwordConf.trim() === password.trim());
+  return "Passwords match"; //TODELETE
   switch (
     password.match(
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/

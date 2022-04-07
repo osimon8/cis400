@@ -17,7 +17,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera",
+        "NSPhotoLibraryUsageDescription":
+"Your message to user when the photo library is accessed for the first time",
+"NSMicrophoneUsageDescription":
+"The microphone is accessed for the first time"
+
+      }
     },
     "android": {
       "adaptiveIcon": {
