@@ -8,7 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { register } from "../api";
-import { inputValidation, passwordCheck } from "./Action";
+import { inputValidation, passwordCheck } from "../utils";
 import Button from "../components/Button";
 
 export interface IRegistrationScreen {
