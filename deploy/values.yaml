@@ -1,6 +1,7 @@
 application:
   ingress:
     path: "/"
+    port: 3000
 
 backend:
   image: ghcr.io/osimon8/cis400
